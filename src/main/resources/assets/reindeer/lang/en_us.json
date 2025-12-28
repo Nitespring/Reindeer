@@ -1,0 +1,13 @@
+{
+  "itemGroup.reindeer": "Example Mod Tab",
+  "block.reindeer.example_block": "Example Block",
+  "item.reindeer.example_item": "Example Item",
+
+  "reindeer.configuration.title": "Reindeer Configs",
+  "reindeer.configuration.section.reindeer.common.toml": "Reindeer Configs",
+  "reindeer.configuration.section.reindeer.common.toml.title": "Reindeer Configs",
+  "reindeer.configuration.items": "Item List",
+  "reindeer.configuration.logDirtBlock": "Log Dirt Block",
+  "reindeer.configuration.magicNumberIntroduction": "Magic Number Text",
+  "reindeer.configuration.magicNumber": "Magic Number"
+}
