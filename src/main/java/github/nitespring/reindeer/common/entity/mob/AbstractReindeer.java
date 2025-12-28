@@ -97,5 +97,34 @@ public abstract class AbstractReindeer extends Animal implements OwnableEntity, 
     protected void playGallopSound(SoundType soundType) {
         this.playSound(SoundEvents.HORSE_GALLOP, soundType.getVolume() * 0.15F, soundType.getPitch());
     }
+    @Override
+    public @Nullable AgeableMob getBreedOffspring(ServerLevel serverLevel, AgeableMob ageableMob) {
+        return null;
+    }
+
+    @Override
+    public @Nullable EntityReference<LivingEntity> getOwnerReference() {
+        return null;
+    }
+
+    @Override
+    public void onPlayerJump(int i) {
+
+    }
+
+    @Override
+    public boolean canJump() {
+        return false;
+    }
+
+    @Override
+    public void handleStartJump(int i) {
+
+    }
+
+    @Override
+    public void handleStopJump() {
+
+    }
 
 }
