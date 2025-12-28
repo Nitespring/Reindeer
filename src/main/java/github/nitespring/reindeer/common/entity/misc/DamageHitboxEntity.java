@@ -124,19 +124,19 @@ public class DamageHitboxEntity extends Entity implements TraceableEntity {
 	   }
 	private void applyEffects(LivingEntity target){
 		List<MobEffectInstance> effects = this.getMobEffects();
-
-		if(effects.isEmpty()){
+		if(effects == null || effects.isEmpty()){
 			return;
 		}
-
 		int size = effects.size();
-		for(int i = 0; i<=size; i++) {
+		int i = 0;
+		while(i<size) {
 			MobEffectInstance effect = effects.get(i);
 			if (this.getOwner() == null) {
 				target.addEffect(effect);
 			} else {
 				target.addEffect(effect, this.getOwner());
 			}
+			i++;
 		}
 	}
 	@Override
