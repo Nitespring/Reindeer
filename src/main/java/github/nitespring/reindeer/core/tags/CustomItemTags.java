@@ -10,6 +10,8 @@ import net.minecraft.world.level.block.Block;
 public final class CustomItemTags {
 
     public static final TagKey<Item> REINDEER_FOOD = create("reindeer_food");
+    public static final TagKey<Item> REINDEER_FOOD_MATING = create("reindeer_food_mating");
+    public static final TagKey<Item> REINDEER_FOOD_TAMING = create("reindeer_food_taming");
 
     private CustomItemTags() {
     }
