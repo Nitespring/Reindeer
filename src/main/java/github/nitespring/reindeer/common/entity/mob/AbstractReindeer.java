@@ -35,8 +35,6 @@ public abstract class AbstractReindeer extends Animal implements OwnableEntity, 
     private static final EntityDataAccessor<Integer> COMBAT_STATE = SynchedEntityData.defineId(AbstractReindeer.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> ENTITY_STATE = SynchedEntityData.defineId(AbstractReindeer.class, EntityDataSerializers.INT);
 
-    protected boolean canGallop = true;
-    protected int gallopSoundCounter;
 
     public AbstractReindeer(EntityType<? extends AbstractReindeer> entityType, Level level) {
         super(entityType, level);
@@ -62,6 +60,14 @@ public abstract class AbstractReindeer extends Animal implements OwnableEntity, 
     public int getEntityState() {return this.entityData.get(ENTITY_STATE);}
     public void setEntityState(int anim) {this.entityData.set(ENTITY_STATE, anim);}
 
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(ANIMATION_TICK, 0);
+        builder.define(ANIMATION_STATE, 0);
+        builder.define(COMBAT_STATE, 0);
+        builder.define(ENTITY_STATE, 0);
+    }
 
     protected @Nullable SoundEvent getEatingSound() {
         return null;
@@ -71,37 +77,13 @@ public abstract class AbstractReindeer extends Animal implements OwnableEntity, 
         return null;
     }
 
-    protected void playStepSound(BlockPos pos, BlockState block) {
-        if (!block.liquid()) {
-            BlockState blockstate = this.level().getBlockState(pos.above());
-            SoundType soundtype = block.getSoundType(this.level(), pos, this);
-            if (blockstate.is(Blocks.SNOW)) {
-                soundtype = blockstate.getSoundType(this.level(), pos, this);
-            }
 
-            if (this.isVehicle() && this.canGallop) {
-                ++this.gallopSoundCounter;
-                if (this.gallopSoundCounter > 5 && this.gallopSoundCounter % 3 == 0) {
-                    this.playGallopSound(soundtype);
-                } else if (this.gallopSoundCounter <= 5) {
-                    this.playSound(SoundEvents.HORSE_STEP_WOOD, soundtype.getVolume() * 0.15F, soundtype.getPitch());
-                }
-            } else if (this.isWoodSoundType(soundtype)) {
-                this.playSound(SoundEvents.HORSE_STEP_WOOD, soundtype.getVolume() * 0.15F, soundtype.getPitch());
-            } else {
-                this.playSound(SoundEvents.HORSE_STEP, soundtype.getVolume() * 0.15F, soundtype.getPitch());
-            }
-        }
-
-    }
 
     private boolean isWoodSoundType(SoundType soundType) {
         return soundType == SoundType.WOOD || soundType == SoundType.NETHER_WOOD || soundType == SoundType.STEM || soundType == SoundType.CHERRY_WOOD || soundType == SoundType.BAMBOO_WOOD;
     }
 
-    protected void playGallopSound(SoundType soundType) {
-        this.playSound(SoundEvents.HORSE_GALLOP, soundType.getVolume() * 0.15F, soundType.getPitch());
-    }
+
     @Override
     public @Nullable AgeableMob getBreedOffspring(ServerLevel serverLevel, AgeableMob ageableMob) {
         return null;

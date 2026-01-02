@@ -89,6 +89,15 @@ public class Reindeer extends AbstractReindeer implements GeoEntity {
     public void setRudolph(boolean anim) {this.entityData.set(RUDOLPH, anim);}
     public boolean hasLights() {return this.entityData.get(LIGHTS);}
     public void setLights(boolean anim) {this.entityData.set(LIGHTS, anim);}
+
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(COLOUR, 0);
+        builder.define(LIGHT_STATE, 0);
+        builder.define(RUDOLPH, false);
+        builder.define(LIGHTS, false);
+    }
     @Override
     protected void registerGoals() {
         /*this.goalSelector.addGoal(2, new BreedGoal(this, (double)1.0F, Reindeer.class));

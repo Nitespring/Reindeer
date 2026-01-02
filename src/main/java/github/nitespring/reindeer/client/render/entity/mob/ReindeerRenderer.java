@@ -20,6 +20,7 @@ import net.minecraft.world.item.ItemStack;
 
 import org.jspecify.annotations.Nullable;
 import software.bernie.geckolib.constant.DataTickets;
+import software.bernie.geckolib.model.DefaultedEntityGeoModel;
 import software.bernie.geckolib.model.GeoModel;
 
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
@@ -29,7 +30,7 @@ import software.bernie.geckolib.renderer.base.GeoRenderState;
 import software.bernie.geckolib.renderer.layer.GeoRenderLayer;
 
 @SuppressWarnings("ALL")
-public class ReindeerRenderer<R extends LivingEntityRenderState & GeoRenderState> extends GeoEntityRenderer<Reindeer>{
+public class ReindeerRenderer<R extends LivingEntityRenderState & GeoRenderState> extends GeoEntityRenderer<Reindeer, R>{
 
 	public ReindeerRenderer(EntityRendererProvider.Context renderManager)
     {
@@ -44,7 +45,7 @@ public class ReindeerRenderer<R extends LivingEntityRenderState & GeoRenderState
 		return 0f;
 	}
 	@Override
-	public @Nullable RenderType getRenderType(GeoRenderState renderState, Identifier texture) {
+	public @Nullable RenderType getRenderType(R renderState, Identifier texture) {
 		return RenderTypes.entityCutoutNoCull(texture);
 	}
 
@@ -53,17 +54,15 @@ public class ReindeerRenderer<R extends LivingEntityRenderState & GeoRenderState
 	public static class ReindeerModel<T extends Reindeer> extends GeoModel<T> {
 		@Override
 		public Identifier getAnimationResource(T animatable) {
-
-			return Identifier.fromNamespaceAndPath(ReindeerMod.MODID, "reindeer.animation.json");
+			return Identifier.fromNamespaceAndPath(ReindeerMod.MODID, "reindeer.json");
 		}
 		@Override
 		public Identifier getModelResource(GeoRenderState renderState) {
-			return Identifier.fromNamespaceAndPath(ReindeerMod.MODID, "reindeer.geo.json");
-
+			return Identifier.fromNamespaceAndPath(ReindeerMod.MODID, "reindeer.json");
 		}
 		@Override
 		public Identifier getTextureResource(GeoRenderState renderState) {
-			return Identifier.fromNamespaceAndPath(ReindeerMod.MODID, "textures/entity/reindeer.png");
+			return Identifier.fromNamespaceAndPath(ReindeerMod.MODID, "textures/entity/reindeer/reindeer.png");
 		}
 	}
 }

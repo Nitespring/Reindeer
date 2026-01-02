@@ -1,6 +1,6 @@
 package github.nitespring.reindeer.core.tags;
 
-import github.nitespring.reindeer.Reindeer;
+import github.nitespring.reindeer.ReindeerMod;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
@@ -15,7 +15,7 @@ public final class CustomBlockTags {
 
 
     private static TagKey<Block> create(String string) {
-        return TagKey.create(BuiltInRegistries.BLOCK.key(), Identifier.fromNamespaceAndPath(Reindeer.MODID , string));
+        return TagKey.create(BuiltInRegistries.BLOCK.key(), Identifier.fromNamespaceAndPath(ReindeerMod.MODID , string));
     }
 
 
