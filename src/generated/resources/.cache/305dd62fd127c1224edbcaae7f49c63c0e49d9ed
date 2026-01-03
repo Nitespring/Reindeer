@@ -1,0 +1,9 @@
+// 1.21.11	2026-01-03T15:58:13.356249	Model Definitions - reindeer
+3b847ae5267223dac30c473840d006363bbcf137 assets/reindeer/items/cooked_reindeer_meat.json
+e687d89d5abf2e5c08464c78d270c788cdb78985 assets/reindeer/items/raw_reindeer_meat.json
+4ee5b8f4a713a9004f9c8084e42faaf88deb3d9e assets/reindeer/items/reindeer_antler.json
+e910538d5bd1fb0247f89df9b190e0c46f6cab5b assets/reindeer/items/reindeer_spawn_egg.json
+89cb4249186ef9176c4a37617dac702a2e754e0f assets/reindeer/models/item/cooked_reindeer_meat.json
+2611e0aaa298d76ac821037a87cfbc8b712abeae assets/reindeer/models/item/raw_reindeer_meat.json
+f02cec6f70ac2719c63a9c21af268e8fb1bfaf76 assets/reindeer/models/item/reindeer_antler.json
+5f0027adb7bc5069ef39d7fa91b75f2676e18e9e assets/reindeer/models/item/reindeer_spawn_egg.json

@@ -421,7 +421,7 @@
 						"vector": ["-37.5-45*math.sin(query.anim_time*180)", 0, 0]
 					},
 					"position": {
-						"vector": [0, "1.5+0.5*math.max(math.cos(query.anim_time*180))", "0.75*math.cos(query.anim_time*180)"]
+						"vector": [0, "1.5+0.5*math.max(0,math.cos(query.anim_time*180))", "0.75*math.cos(query.anim_time*180)"]
 					}
 				},
 				"leg_front_right": {
@@ -434,7 +434,7 @@
 						"vector": ["-27.5+45*math.cos(query.anim_time*180+45)", 0, 0]
 					},
 					"position": {
-						"vector": [0, "-2.5*math.max(-math.sin(query.anim_time*180+45))", "2.5*math.cos(query.anim_time*180+45)"]
+						"vector": [0, "-2.5*math.max(0,-math.sin(query.anim_time*180+45))", "2.5*math.cos(query.anim_time*180+45)"]
 					}
 				},
 				"leg_back_right": {
@@ -445,7 +445,7 @@
 						"vector": [
 							0,
 							"-0.5+3.5*math.max(-0.25,math.sin(query.anim_time*180+45))+2.5*math.max(-0.60,-math.sin(query.anim_time*180+45))",
-							"1.5*math.max(math.cos(query.anim_time*180+45))"
+							"1.5*math.max(0,math.cos(query.anim_time*180+45))"
 						]
 					}
 				},
@@ -454,7 +454,7 @@
 						"vector": ["-37.5-45*math.sin(query.anim_time*180+45)", 0, 0]
 					},
 					"position": {
-						"vector": [0, "1.5+0.5*math.max(math.cos(query.anim_time*180+45))", "0.75*math.cos(query.anim_time*180+45)"]
+						"vector": [0, "1.5+0.5*math.max(0,math.cos(query.anim_time*180+45))", "0.75*math.cos(query.anim_time*180+45)"]
 					}
 				},
 				"leg_front_left": {
@@ -467,7 +467,7 @@
 						"vector": ["-27.5+45*math.cos(query.anim_time*180)", 0, 0]
 					},
 					"position": {
-						"vector": [0, "-2.5*math.max(-math.sin(query.anim_time*180))", "2.5*math.cos(query.anim_time*180)"]
+						"vector": [0, "-2.5*math.max(0,-math.sin(query.anim_time*180))", "2.5*math.cos(query.anim_time*180)"]
 					}
 				},
 				"leg_back_left": {
@@ -478,7 +478,7 @@
 						"vector": [
 							0,
 							"-0.5+3.5*math.max(-0.25,math.sin(query.anim_time*180))+2.5*math.max(-0.60,-math.sin(query.anim_time*180))",
-							"1.5*math.max(math.cos(query.anim_time*180))"
+							"1.5*math.max(0,math.cos(query.anim_time*180))"
 						]
 					}
 				},
@@ -538,7 +538,7 @@
 						"vector": ["-37.5-45*math.sin(query.anim_time*180)", 0, 0]
 					},
 					"position": {
-						"vector": [0, "1.5+0.5*math.max(math.cos(query.anim_time*180))", "0.75*math.cos(query.anim_time*180)"]
+						"vector": [0, "1.5+0.5*math.max(0,math.cos(query.anim_time*180))", "0.75*math.cos(query.anim_time*180)"]
 					}
 				},
 				"leg_front_right": {
@@ -551,7 +551,7 @@
 						"vector": ["-27.5+45*math.cos(query.anim_time*180+45)", 0, 0]
 					},
 					"position": {
-						"vector": [0, "-2.5*math.max(-math.sin(query.anim_time*180+45))", "2.5*math.cos(query.anim_time*180+45)"]
+						"vector": [0, "-2.5*math.max(0,-math.sin(query.anim_time*180+45))", "2.5*math.cos(query.anim_time*180+45)"]
 					}
 				},
 				"leg_back_right": {
@@ -562,7 +562,7 @@
 						"vector": [
 							0,
 							"-0.5+3.5*math.max(-0.25,math.sin(query.anim_time*180+45))+2.5*math.max(-0.60,-math.sin(query.anim_time*180+45))",
-							"1.5*math.max(math.cos(query.anim_time*180+45))"
+							"1.5*math.max(0,math.cos(query.anim_time*180+45))"
 						]
 					}
 				},
@@ -571,7 +571,7 @@
 						"vector": ["-37.5-45*math.sin(query.anim_time*180+45)", 0, 0]
 					},
 					"position": {
-						"vector": [0, "1.5+0.5*math.max(math.cos(query.anim_time*180+45))", "0.75*math.cos(query.anim_time*180+45)"]
+						"vector": [0, "1.5+0.5*math.max(0,math.cos(query.anim_time*180+45))", "0.75*math.cos(query.anim_time*180+45)"]
 					}
 				},
 				"leg_front_left": {
@@ -584,7 +584,7 @@
 						"vector": ["-27.5+45*math.cos(query.anim_time*180)", 0, 0]
 					},
 					"position": {
-						"vector": [0, "-2.5*math.max(-math.sin(query.anim_time*180))", "2.5*math.cos(query.anim_time*180)"]
+						"vector": [0, "-2.5*math.max(0,-math.sin(query.anim_time*180))", "2.5*math.cos(query.anim_time*180)"]
 					}
 				},
 				"leg_back_left": {
@@ -595,7 +595,7 @@
 						"vector": [
 							0,
 							"-0.5+3.5*math.max(-0.25,math.sin(query.anim_time*180))+2.5*math.max(-0.60,-math.sin(query.anim_time*180))",
-							"1.5*math.max(math.cos(query.anim_time*180))"
+							"1.5*math.max(0,math.cos(query.anim_time*180))"
 						]
 					}
 				},

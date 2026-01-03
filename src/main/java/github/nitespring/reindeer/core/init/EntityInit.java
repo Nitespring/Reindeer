@@ -3,6 +3,7 @@ package github.nitespring.reindeer.core.init;
 import github.nitespring.reindeer.ReindeerMod;
 import github.nitespring.reindeer.common.entity.misc.DamageHitboxEntity;
 import github.nitespring.reindeer.common.entity.mob.Reindeer;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
@@ -25,7 +26,7 @@ public class EntityInit {
 					.build(createResourcekey("reindeer")));*/
 
 
-	public static final Supplier<EntityType<Reindeer>> REINDEER = registerEntity("reindeer",
+	public static final DeferredHolder<EntityType<?> ,EntityType<Reindeer>> REINDEER = registerEntity("reindeer",
 			EntityType.Builder.<Reindeer>of(Reindeer::new, MobCategory.CREATURE)
 					.sized(1.3964844F, 1.6F)
 					.eyeHeight(1.52F)
@@ -43,7 +44,7 @@ public class EntityInit {
 					.sized(3.5f, 2.5f)
 					);
 
-	public static <T extends Entity> Supplier<EntityType<T>> registerEntity(String key, EntityType.Builder<T> builder)
+	public static <T extends Entity> DeferredHolder<EntityType<?> ,EntityType<T>> registerEntity(String key, EntityType.Builder<T> builder)
 	{
 		return ENTITIES.register(key, ()-> builder.build(createResourcekey(key)));
 	}

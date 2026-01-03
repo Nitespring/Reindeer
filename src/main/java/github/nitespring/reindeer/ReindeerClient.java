@@ -1,8 +1,11 @@
 package github.nitespring.reindeer;
 
 import github.nitespring.reindeer.client.render.entity.mob.ReindeerRenderer;
+import github.nitespring.reindeer.core.datagen.CustomItemModelProvider;
 import github.nitespring.reindeer.core.init.EntityInit;
 import net.minecraft.client.Minecraft;
+import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
@@ -12,6 +15,7 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
+import net.neoforged.neoforge.data.event.GatherDataEvent;
 
 // This class will not load on dedicated servers. Accessing client side code from here is safe.
 @Mod(value = ReindeerMod.MODID, dist = Dist.CLIENT)
@@ -36,4 +40,6 @@ public class ReindeerClient {
         /*ReindeerMod.LOGGER.info("HELLO FROM CLIENT SETUP");
         ReindeerMod.LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());*/
     }
+
+
 }

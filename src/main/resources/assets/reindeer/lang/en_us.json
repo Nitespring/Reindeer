@@ -1,7 +1,18 @@
 {
-  "itemGroup.reindeer": "Example Mod Tab",
+  "entity.reindeer.reindeer": "Reindeer",
+  "entity.reindeer.hitbox": "Attack Hitbox",
+  "entity.reindeer.hitbox_large": "Attack Hitbox",
+  "itemGroup.reindeer.reindeer": "Reindeer Mod",
+
+
+  "item.reindeer.reindeer_spawn_egg": "Reindeer Spawn Egg",
+
+  "item.reindeer.reindeer_antler": "Reindeer Antler",
+  "item.reindeer.raw_reindeer_meat": "Raw Reindeer Meat",
+  "item.reindeer.cooked_reindeer_meat": "Cooked Reindeer Meat",
+
+
   "block.reindeer.example_block": "Example Block",
-  "item.reindeer.example_item": "Example Item",
 
   "reindeer.configuration.title": "Reindeer Configs",
   "reindeer.configuration.section.reindeer.common.toml": "Reindeer Configs",

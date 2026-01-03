@@ -9,6 +9,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
@@ -16,6 +18,7 @@ import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.equine.AbstractHorse;
 import net.minecraft.world.entity.animal.equine.Horse;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
@@ -69,6 +72,36 @@ public abstract class AbstractReindeer extends Animal implements OwnableEntity, 
         builder.define(ENTITY_STATE, 0);
     }
 
+
+    protected void doPlayerRide(Player player) {
+        if (!this.level().isClientSide()) {
+            player.setYRot(this.getYRot());
+            player.setXRot(this.getXRot());
+            player.startRiding(this);
+        }
+
+    }
+
+    public InteractionResult mobInteract(Player p_478070_, InteractionHand p_478064_) {
+        if (!this.isVehicle() && !this.isBaby()) {
+
+            ItemStack itemstack = p_478070_.getItemInHand(p_478064_);
+            if (!itemstack.isEmpty()) {
+                InteractionResult interactionresult = itemstack.interactLivingEntity(p_478070_, this, p_478064_);
+                if (interactionresult.consumesAction()) {
+                    return interactionresult;
+                }
+
+            }
+
+            this.doPlayerRide(p_478070_);
+            return InteractionResult.SUCCESS;
+
+        } else {
+            return super.mobInteract(p_478070_, p_478064_);
+        }
+    }
+
     protected @Nullable SoundEvent getEatingSound() {
         return null;
     }
@@ -96,11 +129,12 @@ public abstract class AbstractReindeer extends Animal implements OwnableEntity, 
 
     @Override
     public void onPlayerJump(int i) {
-
+        this.setDeltaMovement(this.getDeltaMovement().add(0,1.5f,0));
     }
     @Override
     public boolean canJump() {
-        return this.isSaddled();
+        return true;
+       // return this.isSaddled();
     }
 
     @Override

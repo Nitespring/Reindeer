@@ -54,11 +54,11 @@ public class ReindeerRenderer<R extends LivingEntityRenderState & GeoRenderState
 	public static class ReindeerModel<T extends Reindeer> extends GeoModel<T> {
 		@Override
 		public Identifier getAnimationResource(T animatable) {
-			return Identifier.fromNamespaceAndPath(ReindeerMod.MODID, "reindeer.json");
+			return Identifier.fromNamespaceAndPath(ReindeerMod.MODID, "reindeer");
 		}
 		@Override
 		public Identifier getModelResource(GeoRenderState renderState) {
-			return Identifier.fromNamespaceAndPath(ReindeerMod.MODID, "reindeer.json");
+			return Identifier.fromNamespaceAndPath(ReindeerMod.MODID, "reindeer");
 		}
 		@Override
 		public Identifier getTextureResource(GeoRenderState renderState) {

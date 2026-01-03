@@ -61,12 +61,17 @@ public class Reindeer extends AbstractReindeer implements GeoEntity {
     private <E extends GeoAnimatable> PlayState predicate(AnimationTest<E> event) {
         int animState = this.getAnimationState();
         if(this.isDeadOrDying()) {
-            event.controller().setAnimation(RawAnimation.begin().thenPlay("animation.reindeer.death"));
+            event.controller().setAnimationSpeed(1.0f).setAnimation(RawAnimation.begin().thenPlay("animation.reindeer.death"));
         }else {
             if(event.isMoving()){
-                event.controller().setAnimation(RawAnimation.begin().thenLoop("animation.reindeer.walk"));
+                if(hasControllingPassenger()) {
+                    event.controller().setAnimationSpeed(4.0f).setAnimation(RawAnimation.begin().thenLoop("animation.reindeer.run"));
+                } else {
+                    event.controller().setAnimationSpeed(1.2f).setAnimation(RawAnimation.begin().thenLoop("animation.reindeer.walk"));
+                }
+
             }else {
-                event.controller().setAnimation(RawAnimation.begin().thenLoop("animation.reindeer.idle"));
+                event.controller().setAnimationSpeed(1.0f).setAnimation(RawAnimation.begin().thenLoop("animation.reindeer.idle"));
             }
         }
         return PlayState.CONTINUE;

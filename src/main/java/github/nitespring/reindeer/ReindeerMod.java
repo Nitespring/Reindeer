@@ -1,8 +1,10 @@
 package github.nitespring.reindeer;
 
+import github.nitespring.reindeer.core.datagen.CustomItemModelProvider;
 import github.nitespring.reindeer.core.init.EntityInit;
 import github.nitespring.reindeer.core.init.ItemInit;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.data.event.GatherDataEvent;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -39,6 +41,7 @@ public class ReindeerMod {
     private void commonSetup(FMLCommonSetupEvent event) {
 
     }
+
 
 
 
