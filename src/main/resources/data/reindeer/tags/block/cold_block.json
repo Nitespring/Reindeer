@@ -1,0 +1,11 @@
+{
+  "replace" : false,
+  "values" : [
+    "snow",
+    "snow_block",
+    "powder_snow",
+    "ice",
+    "packed_ice",
+    "blue_ice"
+  ]
+}

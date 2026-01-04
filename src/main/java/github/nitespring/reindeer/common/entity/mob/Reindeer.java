@@ -4,8 +4,11 @@ import github.nitespring.reindeer.core.tags.CustomItemTags;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.goal.*;
+import net.minecraft.world.entity.animal.cow.Cow;
+import net.minecraft.world.entity.animal.equine.AbstractHorse;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -103,10 +106,14 @@ public class Reindeer extends AbstractReindeer implements GeoEntity {
         builder.define(RUDOLPH, false);
         builder.define(LIGHTS, false);
     }
+
+
+
     @Override
     protected void registerGoals() {
         /*this.goalSelector.addGoal(2, new BreedGoal(this, (double)1.0F, Reindeer.class));
         this.goalSelector.addGoal(4, new FollowParentGoal(this, (double)1.0F));*/
+        //this.goalSelector.addGoal(1, new RunAroundLikeCrazyGoal(this, 1.2));
         this.goalSelector.addGoal(6, new WaterAvoidingRandomStrollGoal(this, 0.7));
         this.goalSelector.addGoal(7, new LookAtPlayerGoal(this, Player.class, 6.0F));
         this.goalSelector.addGoal(8, new RandomLookAroundGoal(this));

@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_raw_reindeer_meat": {
+      "conditions": {
+        "items": [
+          {
+            "items": "reindeer:raw_reindeer_meat"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "reindeer:cooked_reindeer_meat_from_smelting_raw_reindeer_meat"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_raw_reindeer_meat"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "reindeer:cooked_reindeer_meat_from_smelting_raw_reindeer_meat"
+    ]
+  }
+}

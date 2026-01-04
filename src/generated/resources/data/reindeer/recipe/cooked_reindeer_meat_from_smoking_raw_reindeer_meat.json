@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:smoking",
+  "category": "food",
+  "cookingtime": 100,
+  "experience": 0.25,
+  "group": "cooked_reindeer_meat",
+  "ingredient": "reindeer:raw_reindeer_meat",
+  "result": {
+    "count": 1,
+    "id": "reindeer:cooked_reindeer_meat"
+  }
+}
