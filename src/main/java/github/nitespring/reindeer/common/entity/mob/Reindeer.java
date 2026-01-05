@@ -27,8 +27,6 @@ public class Reindeer extends AbstractReindeer implements GeoEntity {
 
     private static final EntityDataAccessor<Integer> COLOUR = SynchedEntityData.defineId(Reindeer.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Boolean> RUDOLPH = SynchedEntityData.defineId(Reindeer.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Boolean> LIGHTS = SynchedEntityData.defineId(Reindeer.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Integer> LIGHT_STATE = SynchedEntityData.defineId(Reindeer.class, EntityDataSerializers.INT);
     protected AnimatableInstanceCache factory = GeckoLibUtil.createInstanceCache(this);
 
     public Reindeer(EntityType<? extends AbstractReindeer> entityType, Level level) {
@@ -66,15 +64,17 @@ public class Reindeer extends AbstractReindeer implements GeoEntity {
         if(this.isDeadOrDying()) {
             event.controller().setAnimationSpeed(1.0f).setAnimation(RawAnimation.begin().thenPlay("animation.reindeer.death"));
         }else {
-            if(event.isMoving()){
-                if(hasControllingPassenger()) {
-                    event.controller().setAnimationSpeed(4.0f).setAnimation(RawAnimation.begin().thenLoop("animation.reindeer.run"));
-                } else {
-                    event.controller().setAnimationSpeed(1.2f).setAnimation(RawAnimation.begin().thenLoop("animation.reindeer.walk"));
-                }
-
-            }else {
-                event.controller().setAnimationSpeed(1.0f).setAnimation(RawAnimation.begin().thenLoop("animation.reindeer.idle"));
+            float speed = getMovementSpeed();
+            switch(getMovementState()){
+                case 1:
+                    event.controller().setAnimationSpeed(2.5f*speed).setAnimation(RawAnimation.begin().thenLoop("animation.reindeer.walk"));
+                    break;
+                case 2:
+                    event.controller().setAnimationSpeed(4.0f*speed).setAnimation(RawAnimation.begin().thenLoop("animation.reindeer.run"));
+                    break;
+                default:
+                    event.controller().setAnimationSpeed(1.0f).setAnimation(RawAnimation.begin().thenLoop("animation.reindeer.idle"));
+                    break;
             }
         }
         return PlayState.CONTINUE;
@@ -82,38 +82,27 @@ public class Reindeer extends AbstractReindeer implements GeoEntity {
 
     public int getColour() {return this.entityData.get(COLOUR);}
     public void setColour(int anim) {this.entityData.set(COLOUR, anim);}
-    public int getLightState() {return this.entityData.get(LIGHT_STATE);}
-    public void setLightState(int anim) {this.entityData.set(LIGHT_STATE, anim);}
-    public void changeLightState() {
-        int i = getLightState();
-        if(i<5) {
-            this.entityData.set(LIGHT_STATE, i + 1);
-        }else{
-            this.entityData.set(LIGHT_STATE, 0);
-        }
-    }
+
 
     public boolean isRudolph() {return this.entityData.get(RUDOLPH);}
     public void setRudolph(boolean anim) {this.entityData.set(RUDOLPH, anim);}
-    public boolean hasLights() {return this.entityData.get(LIGHTS);}
-    public void setLights(boolean anim) {this.entityData.set(LIGHTS, anim);}
+
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
         builder.define(COLOUR, 0);
-        builder.define(LIGHT_STATE, 0);
         builder.define(RUDOLPH, false);
-        builder.define(LIGHTS, false);
     }
 
 
 
     @Override
     protected void registerGoals() {
-        /*this.goalSelector.addGoal(2, new BreedGoal(this, (double)1.0F, Reindeer.class));
+        /*
         this.goalSelector.addGoal(4, new FollowParentGoal(this, (double)1.0F));*/
-        //this.goalSelector.addGoal(1, new RunAroundLikeCrazyGoal(this, 1.2));
+        this.goalSelector.addGoal(2, new BreedGoal(this, (double)1.0F, Reindeer.class));
+        this.goalSelector.addGoal(2, new PanicGoal(this, (double)1.2F));
         this.goalSelector.addGoal(6, new WaterAvoidingRandomStrollGoal(this, 0.7));
         this.goalSelector.addGoal(7, new LookAtPlayerGoal(this, Player.class, 6.0F));
         this.goalSelector.addGoal(8, new RandomLookAroundGoal(this));

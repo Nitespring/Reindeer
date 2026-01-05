@@ -20,11 +20,17 @@ public class ModRegistrationEventHandler {
 	public static void registerAttributes(EntityAttributeCreationEvent event) {
 		AttributeSupplier.Builder reindeerAttributes = Monster.createMobAttributes()
 				.add(Attributes.FOLLOW_RANGE, 16)
-				.add(Attributes.MAX_HEALTH, 28)
+				.add(Attributes.MAX_HEALTH, 36)
 				.add(Attributes.MOVEMENT_SPEED, 0.25f)
 				.add(Attributes.ATTACK_DAMAGE, 1.5f)
 				.add(Attributes.ATTACK_KNOCKBACK, 0.25)
-				.add(Attributes.TEMPT_RANGE, 5);
+				.add(Attributes.TEMPT_RANGE, 15)
+				.add(Attributes.KNOCKBACK_RESISTANCE, 0.1f)
+				.add(Attributes.FALL_DAMAGE_MULTIPLIER, 0.0f)
+				.add(Attributes.STEP_HEIGHT, 1.0f)
+				.add(Attributes.JUMP_STRENGTH, 0.6f)
+				.add(Attributes.GRAVITY, 0.04f)
+				.add(Attributes.FLYING_SPEED, 0.15f);
 
 		event.put(EntityInit.REINDEER.get(), reindeerAttributes.build());
 
