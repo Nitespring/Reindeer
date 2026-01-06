@@ -36,24 +36,39 @@
 					"pivot": [0, 17, 7]
 				},
 				{
-					"name": "hips",
+					"name": "hips_attack",
 					"parent": "body",
+					"pivot": [0, 17, 7]
+				},
+				{
+					"name": "hips",
+					"parent": "hips_attack",
 					"pivot": [0, 17, 7],
 					"cubes": [
 						{"origin": [-5, 12, 2], "size": [10, 10, 9], "uv": [76, 45]}
 					]
 				},
 				{
-					"name": "belly",
+					"name": "belly_attack",
 					"parent": "hips",
+					"pivot": [0, 19, 3]
+				},
+				{
+					"name": "belly",
+					"parent": "belly_attack",
 					"pivot": [0, 19, 3],
 					"cubes": [
 						{"origin": [-5, 12, -6], "size": [10, 10, 10], "inflate": -0.25, "uv": [35, 44]}
 					]
 				},
 				{
-					"name": "chest",
+					"name": "chest_attack",
 					"parent": "belly",
+					"pivot": [0, 19, -5]
+				},
+				{
+					"name": "chest",
+					"parent": "chest_attack",
 					"pivot": [0, 19, -5],
 					"cubes": [
 						{"origin": [-5, 12, -11], "size": [10, 10, 7], "uv": [0, 47]}
@@ -70,8 +85,13 @@
 					"pivot": [0, 20, -7]
 				},
 				{
-					"name": "neck",
+					"name": "neck_attack",
 					"parent": "neck_root",
+					"pivot": [0, 20, -7]
+				},
+				{
+					"name": "neck",
+					"parent": "neck_attack",
 					"pivot": [0, 20, -7],
 					"rotation": [30, 0, 0],
 					"cubes": [
@@ -81,7 +101,7 @@
 				{
 					"name": "head_rotation",
 					"parent": "neck",
-					"pivot": [0, 28.90192, -12.36603]
+					"pivot": [0, 28.90192, -9.36603]
 				},
 				{
 					"name": "head_root",
@@ -89,8 +109,13 @@
 					"pivot": [0, 28.90192, -12.36603]
 				},
 				{
-					"name": "head",
+					"name": "head_attack",
 					"parent": "head_root",
+					"pivot": [0, 28.90192, -12.36603]
+				},
+				{
+					"name": "head",
+					"parent": "head_attack",
 					"pivot": [0, 28.90192, -12.36603],
 					"cubes": [
 						{"origin": [-3, 27.90192, -13.36603], "size": [6, 6, 8], "uv": [0, 6]},
@@ -102,14 +127,16 @@
 				{
 					"name": "bridle",
 					"parent": "head",
-					"pivot": [0, 30.4175, -12.36603]
+					"pivot": [0, 30.4175, -12.36603],
+					"cubes": [
+						{"origin": [-2, 28, -14.73205], "size": [4, 6, 2], "inflate": 0.25, "uv": [0, 66]}
+					]
 				},
 				{
 					"name": "bridle_mouth",
 					"parent": "bridle",
 					"pivot": [0, 28.90192, -12.36603],
 					"cubes": [
-						{"origin": [-2, 28, -14.73205], "size": [4, 6, 2], "inflate": 0.25, "uv": [0, 66]},
 						{"origin": [-3, 29.41747, -16.22308], "size": [6, 2, 2], "uv": [0, 75]}
 					]
 				},

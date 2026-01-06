@@ -1,24 +1,53 @@
 {
 	"format_version": "1.8.0",
 	"animations": {
-		"animation.reindeer.walk": {
+		"animation.baby_reindeer.hit": {
+			"animation_length": 1,
+			"bones": {
+				"body_root": {
+					"position": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"0.0833": {
+							"vector": [0, 1, 0]
+						},
+						"0.25": {
+							"vector": [0, 0, 0]
+						}
+					}
+				},
+				"neck_root": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"0.0833": {
+							"vector": [-5, 0, 0]
+						},
+						"0.25": {
+							"vector": [0, 0, 0]
+						}
+					}
+				},
+				"head_root": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"0.0833": {
+							"vector": [-5, 0, 2.5]
+						},
+						"0.25": {
+							"vector": [0, 0, 0]
+						}
+					}
+				}
+			}
+		},
+		"animation.baby_reindeer.walk": {
 			"loop": true,
 			"bones": {
-				"chest": {
-					"rotation": {
-						"vector": [0, "2.5*math.cos(query.anim_time*180)", 0]
-					}
-				},
-				"belly": {
-					"rotation": {
-						"vector": [0, "-5*math.cos(query.anim_time*180)", 0]
-					}
-				},
-				"bridle_ropes": {
-					"rotation": {
-						"vector": [15, 0, 0]
-					}
-				},
 				"hips": {
 					"rotation": {
 						"vector": [0, "2.5*math.cos(query.anim_time*180)", 0]
@@ -113,7 +142,7 @@
 				}
 			}
 		},
-		"animation.reindeer.run": {
+		"animation.baby_reindeer.run": {
 			"loop": true,
 			"bones": {
 				"reindeer": {
@@ -220,63 +249,9 @@
 				}
 			}
 		},
-		"animation.reindeer.hit": {
-			"animation_length": 1,
-			"bones": {
-				"body_root": {
-					"position": {
-						"0.0": {
-							"vector": [0, 0, 0]
-						},
-						"0.0833": {
-							"vector": [0, 1, 0]
-						},
-						"0.25": {
-							"vector": [0, 0, 0]
-						}
-					}
-				},
-				"neck_root": {
-					"rotation": {
-						"0.0": {
-							"vector": [0, 0, 0]
-						},
-						"0.0833": {
-							"vector": [-5, 0, 0]
-						},
-						"0.25": {
-							"vector": [0, 0, 0]
-						}
-					}
-				},
-				"head_root": {
-					"rotation": {
-						"0.0": {
-							"vector": [0, 0, 0]
-						},
-						"0.0833": {
-							"vector": [-5, 0, 2.5]
-						},
-						"0.25": {
-							"vector": [0, 0, 0]
-						}
-					}
-				}
-			}
-		},
-		"animation.reindeer.idle": {
+		"animation.baby_reindeer.idle": {
 			"loop": true,
 			"bones": {
-				"chest": {
-					"position": {
-						"vector": [0, "-0.25*math.cos(query.anim_time*180)", 0]
-					}
-				},
-				"belly": {
-					"position": {
-						"vector": [0, "0.2*math.cos(query.anim_time*180)", 0]
-					}
-				},
 				"hips": {
 					"position": {
 						"vector": [0, "-0.15*math.cos(query.anim_time*180)", 0]
@@ -298,7 +273,228 @@
 					}
 				}
 			}
+		},
+		"animation.baby_reindeer.death": {
+			"animation_length": 4.75,
+			"bones": {
+				"reindeer": {
+					"rotation": {
+						"0.5": {
+							"vector": [0, 0, 0]
+						},
+						"0.75": {
+							"vector": [0, 0, -67.5]
+						},
+						"1.0": {
+							"vector": [0, 0, -90]
+						}
+					},
+					"position": {
+						"0.5": {
+							"vector": [0, 0, 0]
+						},
+						"0.75": {
+							"vector": [-9, 0, 0]
+						},
+						"1.0": {
+							"vector": [-9, -14, 0]
+						}
+					}
+				},
+				"hips": {
+					"rotation": {
+						"0.25": {
+							"vector": [-30, 0, 0]
+						},
+						"0.5": {
+							"vector": [-47.5, 0, 0]
+						},
+						"0.75": {
+							"vector": [-25, 0, 0]
+						}
+					}
+				},
+				"neck": {
+					"rotation": {
+						"0.25": {
+							"vector": [30, 0, 0]
+						},
+						"0.5": {
+							"vector": [17.5, 0, 0]
+						},
+						"0.75": {
+							"vector": [45, 0, 0]
+						},
+						"1.0": {
+							"vector": [47.5, 0, 0]
+						},
+						"1.0833": {
+							"vector": [46.72537, 19.50645, -4.50432]
+						}
+					}
+				},
+				"head": {
+					"rotation": {
+						"0.25": {
+							"vector": [-5, 0, 0]
+						},
+						"0.5": {
+							"vector": [-27.5, 0, 0]
+						},
+						"0.75": {
+							"vector": [-12.5, 0, 0]
+						},
+						"1.0": {
+							"vector": [-20, 0, 0]
+						},
+						"1.0833": {
+							"vector": [-19.37006, 5.07855, 14.13272]
+						}
+					}
+				},
+				"front_legs": {
+					"rotation": {
+						"0.5": {
+							"vector": [-60, 0, 0]
+						},
+						"0.75": {
+							"vector": [-2.5, 0, 0]
+						}
+					},
+					"position": {
+						"0.25": {
+							"vector": [0, 7, 1]
+						},
+						"0.5": {
+							"vector": [0, 14, 1]
+						},
+						"0.75": {
+							"vector": [0, 3, 1]
+						}
+					}
+				},
+				"thigh_front_right": {
+					"rotation": {
+						"0.25": {
+							"vector": [-35, 0, 0]
+						},
+						"0.5": {
+							"vector": [-72.5, 0, 0]
+						},
+						"0.75": {
+							"vector": [-2.44081, -0.54094, -12.48848]
+						},
+						"1.0": {
+							"vector": [-2.38443, -0.75155, -17.48436]
+						},
+						"1.0833": {
+							"vector": [-2.04831, 1.43364, 34.97437]
+						}
+					}
+				},
+				"leg_front_right": {
+					"rotation": {
+						"0.25": {
+							"vector": [72.5, 0, 0]
+						},
+						"0.5": {
+							"vector": [97.5, 0, 0]
+						},
+						"0.75": {
+							"vector": [67.5, 0, 0]
+						}
+					}
+				},
+				"thigh_front_left": {
+					"rotation": {
+						"0.25": {
+							"vector": [-2.5, 0, 0]
+						},
+						"0.5": {
+							"vector": [-30, 0, 0]
+						},
+						"0.75": {
+							"vector": [-49.32185, -9.54385, -8.11019]
+						},
+						"1.0": {
+							"vector": [-50, 0, 0]
+						}
+					}
+				},
+				"leg_front_left": {
+					"rotation": {
+						"0.25": {
+							"vector": [52.5, 0, 0]
+						},
+						"0.5": {
+							"vector": [97.5, 0, 0]
+						},
+						"0.75": {
+							"vector": [112.5, 0, 0]
+						}
+					}
+				},
+				"thigh_back_right": {
+					"rotation": {
+						"0.5": {
+							"vector": [0, 0, 0]
+						},
+						"0.75": {
+							"vector": [11.93845, -3.73171, 17.10967]
+						},
+						"0.875": {
+							"vector": [12.2127, 2.68507, -12.2127]
+						},
+						"1.0833": {
+							"vector": [-5.39396, 3.97177, 18.87754]
+						}
+					}
+				},
+				"leg_back_right": {
+					"rotation": {
+						"0.5": {
+							"vector": [0, 0, 0]
+						},
+						"0.75": {
+							"vector": [-30, 0, 0]
+						}
+					}
+				},
+				"thigh_back_left": {
+					"rotation": {
+						"0.5": {
+							"vector": [0, 0, 0]
+						},
+						"0.75": {
+							"vector": [-22.5, 0, 27.5]
+						},
+						"1.0": {
+							"vector": [-20, 0, 0]
+						}
+					},
+					"position": {
+						"0.9167": {
+							"vector": [0, 0, 0]
+						},
+						"1.0": {
+							"vector": [1, 0, 0]
+						}
+					}
+				},
+				"leg_back_left": {
+					"rotation": {
+						"0.5": {
+							"vector": [0, 0, 0]
+						},
+						"0.75": {
+							"vector": [37.5, 0, 0]
+						}
+					}
+				}
+			}
+		},
+		"animation.baby_reindeer.null": {
+			"loop": true
 		}
-	},
-	"geckolib_format_version": 2
+	}
 }

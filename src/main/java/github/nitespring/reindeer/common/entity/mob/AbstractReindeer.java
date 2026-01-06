@@ -1,5 +1,6 @@
 package github.nitespring.reindeer.common.entity.mob;
 
+import github.nitespring.reindeer.common.entity.misc.DamageHitboxEntity;
 import github.nitespring.reindeer.core.tags.CustomItemTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -23,6 +24,7 @@ import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.FlyingAnimal;
 import net.minecraft.world.entity.animal.equine.AbstractHorse;
 import net.minecraft.world.entity.animal.equine.Horse;
+import net.minecraft.world.entity.animal.wolf.Wolf;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -35,9 +37,10 @@ import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.event.EventHooks;
 import org.jspecify.annotations.Nullable;
 
-public abstract class AbstractReindeer extends Animal implements FlyingAnimal, OwnableEntity, PlayerRideableJumping {
+public abstract class AbstractReindeer extends TamableAnimal implements FlyingAnimal, OwnableEntity, PlayerRideableJumping {
 
     protected int hitStunTicks = 0;
 
@@ -54,6 +57,7 @@ public abstract class AbstractReindeer extends Animal implements FlyingAnimal, O
 
     public AbstractReindeer(EntityType<? extends AbstractReindeer> entityType, Level level) {
         super(entityType, level);
+        this.setTame(false, false);
         this.setPathfindingMalus(PathType.DANGER_OTHER, -1.0F);
         this.setPathfindingMalus(PathType.DAMAGE_OTHER, -1.0F);
     }
@@ -141,7 +145,7 @@ public abstract class AbstractReindeer extends Animal implements FlyingAnimal, O
 
     public void changeLightState() {
         int i = getLightState();
-        if (i < 5) {
+        if (i < 3) {
             this.entityData.set(LIGHT_STATE, i + 1);
         } else {
             this.entityData.set(LIGHT_STATE, 0);
@@ -162,8 +166,44 @@ public abstract class AbstractReindeer extends Animal implements FlyingAnimal, O
     }
 
     @Override
+    public boolean hurtServer(ServerLevel level, DamageSource damageSource, float f) {
+        doHurt(damageSource, f);
+        return super.hurtServer(level, damageSource, f);
+    }
+
+    @Override
+    public boolean hurtClient(DamageSource damageSource) {
+        return super.hurtClient(damageSource);
+    }
+
+    public void doHurt(DamageSource source, float f) {
+        Entity e = source.getEntity();
+        if(f>0 && (e != null && !(e instanceof DamageHitboxEntity && ((DamageHitboxEntity)e).getOwner() == this))) {
+            if(hitStunTicks<=0) {
+                hitStunTicks=5;
+            }
+        }
+
+
+
+    }
+
+    @Override
+    public boolean isOwnedBy(LivingEntity entity) {
+        return entity == this.getOwner();
+    }
+
+    @Override
     public void tick() {
         super.tick();
+        if(hasLights()){
+            if(tickCount%7==0) {
+                changeLightState();
+            }
+        }
+        if(hitStunTicks>=-1) {
+            hitStunTicks--;
+        }
         if (walkAnimation.isMoving()) {
             float speed = walkAnimation.speed();
             double speedAttribute = this.getAttributeValue(Attributes.MOVEMENT_SPEED);
@@ -196,6 +236,8 @@ public abstract class AbstractReindeer extends Animal implements FlyingAnimal, O
 
     }
 
+
+
     @Override
     protected void tickDeath() {
         ++this.deathTime;
@@ -204,25 +246,38 @@ public abstract class AbstractReindeer extends Animal implements FlyingAnimal, O
             this.remove(RemovalReason.KILLED);
         }
     }
-
-    public InteractionResult mobInteract(Player p_478070_, InteractionHand p_478064_) {
+    @Override
+    public InteractionResult mobInteract(Player player, InteractionHand hand) {
         if (!this.isVehicle() && !this.isBaby()) {
 
-            ItemStack itemstack = p_478070_.getItemInHand(p_478064_);
+            ItemStack itemstack = player.getItemInHand(hand);
             if (!itemstack.isEmpty()) {
-                InteractionResult interactionresult = itemstack.interactLivingEntity(p_478070_, this, p_478064_);
+                InteractionResult interactionresult = itemstack.interactLivingEntity(player, this, hand);
                 if (interactionresult.consumesAction()) {
                     return interactionresult;
                 }
 
             }
 
-            this.doPlayerRide(p_478070_);
+            if(this.isTame()&&player==this.getOwner()) {
+                this.doPlayerRide(player);
+            }
             return InteractionResult.SUCCESS;
 
         } else {
-            return super.mobInteract(p_478070_, p_478064_);
+            return super.mobInteract(player, hand);
         }
+    }
+    private void tryToTame(Player player) {
+        if (this.random.nextInt(3) == 0 && !EventHooks.onAnimalTame(this, player)) {
+            this.tame(player);
+            this.navigation.stop();
+            this.setTarget((LivingEntity)null);
+            this.level().broadcastEntityEvent(this, (byte)7);
+        } else {
+            this.level().broadcastEntityEvent(this, (byte)6);
+        }
+
     }
     @Override
     public boolean supportQuadLeash() {
@@ -267,15 +322,7 @@ public abstract class AbstractReindeer extends Animal implements FlyingAnimal, O
     }
 
 
-    @Override
-    public @Nullable AgeableMob getBreedOffspring(ServerLevel serverLevel, AgeableMob ageableMob) {
-        return null;
-    }
 
-    @Override
-    public @Nullable EntityReference<LivingEntity> getOwnerReference() {
-        return null;
-    }
 
     @Override
     public void onPlayerJump(int i) {
@@ -400,5 +447,10 @@ public abstract class AbstractReindeer extends Animal implements FlyingAnimal, O
     @Override
     protected void propagateFallToPassengers(double fallDistance, float damageMultiplier, DamageSource damageSource) {
 
+    }
+
+    @Override
+    public @Nullable AgeableMob getBreedOffspring(ServerLevel serverLevel, AgeableMob ageableMob) {
+        return null;
     }
 }
