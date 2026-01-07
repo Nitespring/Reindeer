@@ -4,6 +4,7 @@ import github.nitespring.reindeer.common.entity.misc.DamageHitboxEntity;
 import github.nitespring.reindeer.common.inventory.ReindeerInventoryMenu;
 import github.nitespring.reindeer.core.init.MenuInit;
 import net.minecraft.core.Holder;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundMountScreenOpenPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -17,6 +18,8 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.animal.FlyingAnimal;
+import net.minecraft.world.entity.animal.equine.Donkey;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.AbstractMountInventoryMenu;
@@ -27,13 +30,15 @@ import net.minecraft.world.item.equipment.Equippable;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.pathfinder.PathType;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.extensions.IPlayerExtension;
 import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent;
 import org.jspecify.annotations.Nullable;
 
-public abstract class AbstractReindeer extends TamableAnimal implements HasCustomInventoryScreen, FlyingAnimal, OwnableEntity, PlayerRideableJumping {
+public abstract class AbstractReindeer extends TamableAnimal implements MenuProvider,HasCustomInventoryScreen, FlyingAnimal, OwnableEntity, PlayerRideableJumping {
 
     protected int hitStunTicks = 0;
 
@@ -58,24 +63,32 @@ public abstract class AbstractReindeer extends TamableAnimal implements HasCusto
     @Override
     public void openCustomInventoryScreen(Player player) {
         System.out.print("Check 1 ");
-        if (!this.level().isClientSide() && (!this.isVehicle() || this.hasPassenger(player)) && this.isTame()) {
+        if (!this.level().isClientSide() /*&& (!this.isVehicle() || this.hasPassenger(player))*/ && this.isTame()) {
             System.out.print("Check 2 ");
-            this.openReindeerInventory(player, this, this.inventory);
+            this.openReindeerInventory(player);
 
         }
     }
-    public void openReindeerInventory(Player player, AbstractReindeer reindeer, Container inventory) {
+    @Override
+    public @Nullable AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
+        return new ReindeerInventoryMenu(i, inventory, this.inventory, this, this.getInventoryColumns());
+    }
+
+    public void openReindeerInventory(Player player) {
         if (player.containerMenu != player.inventoryMenu) {
             player.closeContainer();
         }
         System.out.print("Check 3 ");
-        int i = reindeer.getInventoryColumns();
-        player.openMenu(
-                new SimpleMenuProvider(
-                (id, inv, p)->
-                        new ReindeerInventoryMenu(id, player.getInventory(), inventory, this, i),
-                this.getDisplayName()
-                ));
+        int i = this.getInventoryColumns();
+        if(player instanceof ServerPlayer serverPlayer) {
+            serverPlayer.openMenu(this);
+
+            /*serverPlayer.openMenu(new SimpleMenuProvider(
+                    (containerId, playerInventory, player1) ->
+                            new ReindeerInventoryMenu(containerId, playerInventory, inventory, this, i),
+                    this.getDisplayName()
+            ));*/
+        }
     }
     public boolean hasInventoryChanged(Container inventory) {
         return this.inventory != inventory;
@@ -102,8 +115,8 @@ public abstract class AbstractReindeer extends TamableAnimal implements HasCusto
                 }
             }
         }
-
     }
+
     @Override
     public boolean canUseSlot(EquipmentSlot slot) {
         return slot != EquipmentSlot.SADDLE ? super.canUseSlot(slot) : this.isAlive() && !this.isBaby() && this.isTame();
@@ -325,17 +338,7 @@ public abstract class AbstractReindeer extends TamableAnimal implements HasCusto
             return super.mobInteract(player, hand);
         }
     }
-    private void tryToTame(Player player) {
-        if (this.random.nextInt(3) == 0 && !EventHooks.onAnimalTame(this, player)) {
-            this.tame(player);
-            this.navigation.stop();
-            this.setTarget((LivingEntity)null);
-            this.level().broadcastEntityEvent(this, (byte)7);
-        } else {
-            this.level().broadcastEntityEvent(this, (byte)6);
-        }
 
-    }
     @Override
     public boolean supportQuadLeash() {
         return true;
@@ -371,7 +374,8 @@ public abstract class AbstractReindeer extends TamableAnimal implements HasCusto
 
     @Override
     public float getVoicePitch() {
-        return 0.4f;
+
+        return isBaby() ? 1.6f : 0.4f;
     }
 
     private boolean isWoodSoundType(SoundType soundType) {

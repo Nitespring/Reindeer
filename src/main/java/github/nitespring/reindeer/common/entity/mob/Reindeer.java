@@ -17,7 +17,9 @@ import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.equine.Horse;
 import net.minecraft.world.entity.animal.wolf.Wolf;
 import net.minecraft.world.entity.animal.wolf.WolfSoundVariants;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -232,6 +234,10 @@ public class Reindeer extends AbstractReindeer implements GeoEntity {
     }
     @Override
     public InteractionResult mobInteract(Player player, InteractionHand hand) {
+        if (!this.isVehicle() && this.isTame() && player.isSecondaryUseActive()) {
+            this.openCustomInventoryScreen(player);
+            return InteractionResult.SUCCESS;
+        }
         boolean flag = !this.isBaby() && this.isTame() && player.isSecondaryUseActive();
         if (!this.isVehicle() && !flag) {
             ItemStack itemstack = player.getItemInHand(hand);
@@ -295,7 +301,7 @@ public class Reindeer extends AbstractReindeer implements GeoEntity {
     }
 
     private void tryToTame(Player player) {
-        if (this.random.nextInt(3) == 0 && !EventHooks.onAnimalTame(this, player)) {
+        if (this.random.nextInt(5) == 0 && !EventHooks.onAnimalTame(this, player)) {
             this.tame(player);
             this.navigation.stop();
             this.setTarget((LivingEntity)null);
@@ -306,4 +312,6 @@ public class Reindeer extends AbstractReindeer implements GeoEntity {
         }
 
     }
+
+
 }
