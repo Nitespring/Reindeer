@@ -1,46 +1,39 @@
 package github.nitespring.reindeer.common.entity.mob;
 
 import github.nitespring.reindeer.common.entity.misc.DamageHitboxEntity;
-import github.nitespring.reindeer.core.tags.CustomItemTags;
-import net.minecraft.core.BlockPos;
+import github.nitespring.reindeer.common.inventory.ReindeerInventoryMenu;
+import github.nitespring.reindeer.core.init.MenuInit;
+import net.minecraft.core.Holder;
+import net.minecraft.network.protocol.game.ClientboundMountScreenOpenPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.tags.ItemTags;
-import net.minecraft.util.Mth;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.*;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.*;
-import net.minecraft.world.entity.ai.targeting.TargetingConditions;
-import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.FlyingAnimal;
-import net.minecraft.world.entity.animal.equine.AbstractHorse;
-import net.minecraft.world.entity.animal.equine.Horse;
-import net.minecraft.world.entity.animal.wolf.Wolf;
-import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.AbstractMountInventoryMenu;
+import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.world.inventory.MenuConstructor;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.equipment.Equippable;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.PathType;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.EventHooks;
+import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent;
 import org.jspecify.annotations.Nullable;
 
-public abstract class AbstractReindeer extends TamableAnimal implements FlyingAnimal, OwnableEntity, PlayerRideableJumping {
+public abstract class AbstractReindeer extends TamableAnimal implements HasCustomInventoryScreen, FlyingAnimal, OwnableEntity, PlayerRideableJumping {
 
     protected int hitStunTicks = 0;
 
@@ -52,7 +45,7 @@ public abstract class AbstractReindeer extends TamableAnimal implements FlyingAn
     private static final EntityDataAccessor<Float> MOVEMENT_SPEED = SynchedEntityData.defineId(AbstractReindeer.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Boolean> LIGHTS = SynchedEntityData.defineId(AbstractReindeer.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Integer> LIGHT_STATE = SynchedEntityData.defineId(AbstractReindeer.class, EntityDataSerializers.INT);
-
+    protected SimpleContainer inventory;
     protected int accelerationValue = 0;
 
     public AbstractReindeer(EntityType<? extends AbstractReindeer> entityType, Level level) {
@@ -60,8 +53,69 @@ public abstract class AbstractReindeer extends TamableAnimal implements FlyingAn
         this.setTame(false, false);
         this.setPathfindingMalus(PathType.DANGER_OTHER, -1.0F);
         this.setPathfindingMalus(PathType.DAMAGE_OTHER, -1.0F);
+        this.createInventory();
+    }
+    @Override
+    public void openCustomInventoryScreen(Player player) {
+        System.out.print("Check 1 ");
+        if (!this.level().isClientSide() && (!this.isVehicle() || this.hasPassenger(player)) && this.isTame()) {
+            System.out.print("Check 2 ");
+            this.openReindeerInventory(player, this, this.inventory);
+
+        }
+    }
+    public void openReindeerInventory(Player player, AbstractReindeer reindeer, Container inventory) {
+        if (player.containerMenu != player.inventoryMenu) {
+            player.closeContainer();
+        }
+        System.out.print("Check 3 ");
+        int i = reindeer.getInventoryColumns();
+        player.openMenu(
+                new SimpleMenuProvider(
+                (id, inv, p)->
+                        new ReindeerInventoryMenu(id, player.getInventory(), inventory, this, i),
+                this.getDisplayName()
+                ));
+    }
+    public boolean hasInventoryChanged(Container inventory) {
+        return this.inventory != inventory;
     }
 
+    public int getInventoryColumns() {
+        return 0;
+    }
+
+    public final int getInventorySize() {
+        return AbstractMountInventoryMenu.getInventorySize(this.getInventoryColumns());
+    }
+
+    protected void createInventory() {
+        SimpleContainer simplecontainer = this.inventory;
+        this.inventory = new SimpleContainer(this.getInventorySize());
+        if (simplecontainer != null) {
+            int i = Math.min(simplecontainer.getContainerSize(), this.inventory.getContainerSize());
+
+            for(int j = 0; j < i; ++j) {
+                ItemStack itemstack = simplecontainer.getItem(j);
+                if (!itemstack.isEmpty()) {
+                    this.inventory.setItem(j, itemstack.copy());
+                }
+            }
+        }
+
+    }
+    @Override
+    public boolean canUseSlot(EquipmentSlot slot) {
+        return slot != EquipmentSlot.SADDLE ? super.canUseSlot(slot) : this.isAlive() && !this.isBaby() && this.isTame();
+    }
+    @Override
+    protected boolean canDispenserEquipIntoSlot(EquipmentSlot p_478125_) {
+        return p_478125_ == EquipmentSlot.SADDLE && this.isTame() || super.canDispenserEquipIntoSlot(p_478125_);
+    }
+    @Override
+    protected Holder<SoundEvent> getEquipSound(EquipmentSlot p_477912_, ItemStack p_481049_, Equippable p_481569_) {
+        return (Holder<SoundEvent>)(p_477912_ == EquipmentSlot.SADDLE ? SoundEvents.HORSE_SADDLE : super.getEquipSound(p_477912_, p_481049_, p_481569_));
+    }
     @Override
     public boolean isPushable() {
         return !this.isVehicle();
@@ -249,21 +303,24 @@ public abstract class AbstractReindeer extends TamableAnimal implements FlyingAn
     @Override
     public InteractionResult mobInteract(Player player, InteractionHand hand) {
         if (!this.isVehicle() && !this.isBaby()) {
+            if (this.isTame() && player.isSecondaryUseActive()) {
+                this.openCustomInventoryScreen(player);
+                return InteractionResult.SUCCESS;
+            } else {
+                ItemStack itemstack = player.getItemInHand(hand);
+                if (!itemstack.isEmpty()) {
+                    InteractionResult interactionresult = itemstack.interactLivingEntity(player, this, hand);
+                    if (interactionresult.consumesAction()) {
+                        return interactionresult;
+                    }
 
-            ItemStack itemstack = player.getItemInHand(hand);
-            if (!itemstack.isEmpty()) {
-                InteractionResult interactionresult = itemstack.interactLivingEntity(player, this, hand);
-                if (interactionresult.consumesAction()) {
-                    return interactionresult;
                 }
 
+                if (this.isTame() && player == this.getOwner()) {
+                    this.doPlayerRide(player);
+                }
+                return InteractionResult.SUCCESS;
             }
-
-            if(this.isTame()&&player==this.getOwner()) {
-                this.doPlayerRide(player);
-            }
-            return InteractionResult.SUCCESS;
-
         } else {
             return super.mobInteract(player, hand);
         }
@@ -453,4 +510,6 @@ public abstract class AbstractReindeer extends TamableAnimal implements FlyingAn
     public @Nullable AgeableMob getBreedOffspring(ServerLevel serverLevel, AgeableMob ageableMob) {
         return null;
     }
+
+
 }
