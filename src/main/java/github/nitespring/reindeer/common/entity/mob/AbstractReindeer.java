@@ -535,7 +535,7 @@ public abstract class AbstractReindeer extends TamableAnimal implements Containe
         System.out.print("Check 3 ");
         int i = this.getInventoryColumns();
         if(player instanceof ServerPlayer serverPlayer) {
-            serverPlayer.openMenu(this);
+            //serverPlayer.openMenu(this);
             serverPlayer.openMenu(new SimpleMenuProvider(
                     (containerId, playerInventory, player1) ->
                             new ReindeerInventoryMenu(containerId, playerInventory, inventory, this, i),
