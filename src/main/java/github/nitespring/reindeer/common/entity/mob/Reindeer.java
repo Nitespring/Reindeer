@@ -2,15 +2,15 @@ package github.nitespring.reindeer.common.entity.mob;
 
 import github.nitespring.reindeer.core.init.EntityInit;
 import github.nitespring.reindeer.core.tags.CustomItemTags;
+import net.minecraft.core.NonNullList;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.world.DifficultyInstance;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.*;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.animal.Animal;
@@ -27,6 +27,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.level.storage.loot.LootTable;
 import net.neoforged.neoforge.event.EventHooks;
 import org.jspecify.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoAnimatable;
@@ -145,7 +148,21 @@ public class Reindeer extends AbstractReindeer implements GeoEntity {
         builder.define(RUDOLPH, false);
     }
 
+    @Override
+    protected void addAdditionalSaveData(ValueOutput out) {
+        super.addAdditionalSaveData(out);
+        out.putInt("CoatColour", this.getColour());
+        out.putBoolean("isRudolph", this.isRudolph());
 
+    }
+
+    @Override
+    protected void readAdditionalSaveData(ValueInput in) {
+        super.readAdditionalSaveData(in);
+        this.setColour(in.getIntOr("CoatColour",0));
+        this.setRudolph(in.getBooleanOr("isRudolph",false));
+
+    }
 
 
     @Override
@@ -312,6 +329,7 @@ public class Reindeer extends AbstractReindeer implements GeoEntity {
         }
 
     }
+
 
 
 }

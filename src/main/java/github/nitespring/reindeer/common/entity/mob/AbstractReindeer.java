@@ -1,44 +1,54 @@
 package github.nitespring.reindeer.common.entity.mob;
 
+import com.google.common.graph.Network;
 import github.nitespring.reindeer.common.entity.misc.DamageHitboxEntity;
 import github.nitespring.reindeer.common.inventory.ReindeerInventoryMenu;
 import github.nitespring.reindeer.core.init.MenuInit;
 import net.minecraft.core.Holder;
+import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundMountScreenOpenPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.*;
+import net.minecraft.world.ContainerListener;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.animal.FlyingAnimal;
+import net.minecraft.world.entity.animal.equine.AbstractHorse;
 import net.minecraft.world.entity.animal.equine.Donkey;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.AbstractMountInventoryMenu;
-import net.minecraft.world.inventory.InventoryMenu;
-import net.minecraft.world.inventory.MenuConstructor;
+import net.minecraft.world.entity.vehicle.ContainerEntity;
+import net.minecraft.world.entity.vehicle.boat.ChestBoat;
+import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.equipment.Equippable;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.pathfinder.PathType;
+import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.extensions.IPlayerExtension;
 import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 import org.jspecify.annotations.Nullable;
 
-public abstract class AbstractReindeer extends TamableAnimal implements MenuProvider,HasCustomInventoryScreen, FlyingAnimal, OwnableEntity, PlayerRideableJumping {
+public abstract class AbstractReindeer extends TamableAnimal implements ContainerListener, HasCustomInventoryScreen, MenuProvider, FlyingAnimal, OwnableEntity, PlayerRideableJumping {
 
     protected int hitStunTicks = 0;
 
@@ -51,6 +61,7 @@ public abstract class AbstractReindeer extends TamableAnimal implements MenuProv
     private static final EntityDataAccessor<Boolean> LIGHTS = SynchedEntityData.defineId(AbstractReindeer.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Integer> LIGHT_STATE = SynchedEntityData.defineId(AbstractReindeer.class, EntityDataSerializers.INT);
     protected SimpleContainer inventory;
+
     protected int accelerationValue = 0;
 
     public AbstractReindeer(EntityType<? extends AbstractReindeer> entityType, Level level) {
@@ -60,62 +71,7 @@ public abstract class AbstractReindeer extends TamableAnimal implements MenuProv
         this.setPathfindingMalus(PathType.DAMAGE_OTHER, -1.0F);
         this.createInventory();
     }
-    @Override
-    public void openCustomInventoryScreen(Player player) {
-        System.out.print("Check 1 ");
-        if (!this.level().isClientSide() /*&& (!this.isVehicle() || this.hasPassenger(player))*/ && this.isTame()) {
-            System.out.print("Check 2 ");
-            this.openReindeerInventory(player);
 
-        }
-    }
-    @Override
-    public @Nullable AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
-        return new ReindeerInventoryMenu(i, inventory, this.inventory, this, this.getInventoryColumns());
-    }
-
-    public void openReindeerInventory(Player player) {
-        if (player.containerMenu != player.inventoryMenu) {
-            player.closeContainer();
-        }
-        System.out.print("Check 3 ");
-        int i = this.getInventoryColumns();
-        if(player instanceof ServerPlayer serverPlayer) {
-            serverPlayer.openMenu(this);
-
-            /*serverPlayer.openMenu(new SimpleMenuProvider(
-                    (containerId, playerInventory, player1) ->
-                            new ReindeerInventoryMenu(containerId, playerInventory, inventory, this, i),
-                    this.getDisplayName()
-            ));*/
-        }
-    }
-    public boolean hasInventoryChanged(Container inventory) {
-        return this.inventory != inventory;
-    }
-
-    public int getInventoryColumns() {
-        return 0;
-    }
-
-    public final int getInventorySize() {
-        return AbstractMountInventoryMenu.getInventorySize(this.getInventoryColumns());
-    }
-
-    protected void createInventory() {
-        SimpleContainer simplecontainer = this.inventory;
-        this.inventory = new SimpleContainer(this.getInventorySize());
-        if (simplecontainer != null) {
-            int i = Math.min(simplecontainer.getContainerSize(), this.inventory.getContainerSize());
-
-            for(int j = 0; j < i; ++j) {
-                ItemStack itemstack = simplecontainer.getItem(j);
-                if (!itemstack.isEmpty()) {
-                    this.inventory.setItem(j, itemstack.copy());
-                }
-            }
-        }
-    }
 
     @Override
     public boolean canUseSlot(EquipmentSlot slot) {
@@ -230,6 +186,46 @@ public abstract class AbstractReindeer extends TamableAnimal implements MenuProv
         builder.define(LIGHTS, false);
         builder.define(LIGHT_STATE, 0);
         builder.define(MOVEMENT_SPEED, 0.0f);
+
+    }
+
+    @Override
+    protected void addAdditionalSaveData(ValueOutput out) {
+        super.addAdditionalSaveData(out);
+        out.putInt("AnimationTick", this.getAnimationTick());
+        out.putInt("AnimationState", this.getAnimationState());
+        out.putInt("CombatState", this.getCombatState());
+        out.putInt("EntityState", this.getEntityState());
+        out.putInt("MovementState", this.getMovementState());
+        out.putBoolean("HasLights", this.hasLights());
+        out.putInt("LightState", this.getLightState());
+
+        ValueOutput.TypedOutputList<ItemStackWithSlot> typedoutputlist = out.list("Items", ItemStackWithSlot.CODEC);
+        for(int i = 0; i < this.inventory.getContainerSize(); ++i) {
+            ItemStack itemstack = this.inventory.getItem(i);
+            if (!itemstack.isEmpty()) {
+                typedoutputlist.add(new ItemStackWithSlot(i, itemstack));
+            }
+        }
+    }
+
+    @Override
+    protected void readAdditionalSaveData(ValueInput in) {
+        super.readAdditionalSaveData(in);
+        this.setAnimationTick(in.getIntOr("AnimationTick",0));
+        this.setAnimationState(in.getIntOr("AnimationState",0));
+        this.setAnimationState(in.getIntOr("CombatState",0));
+        this.setAnimationState(in.getIntOr("EntityState",0));
+        this.setAnimationState(in.getIntOr("MovementState",0));
+        this.setLights(in.getBooleanOr("HasLights",false));
+        this.setAnimationState(in.getIntOr("LightState",0));
+
+        this.createInventory();
+        for(ItemStackWithSlot itemstackwithslot : in.listOrEmpty("Items", ItemStackWithSlot.CODEC)) {
+            if (itemstackwithslot.isValidInContainer(this.inventory.getContainerSize())) {
+                this.inventory.setItem(itemstackwithslot.slot(), itemstackwithslot.stack());
+            }
+        }
     }
 
     @Override
@@ -514,6 +510,74 @@ public abstract class AbstractReindeer extends TamableAnimal implements MenuProv
     public @Nullable AgeableMob getBreedOffspring(ServerLevel serverLevel, AgeableMob ageableMob) {
         return null;
     }
+    //Container Stuff
 
+    @Override
+    public void openCustomInventoryScreen(Player player) {
+        System.out.print("Check 1 ");
+        if (!this.level().isClientSide() /*&& (!this.isVehicle() || this.hasPassenger(player))*/ && this.isTame()) {
+            System.out.print("Check 2 ");
+            this.openReindeerInventory(player);
+
+        }
+    }
+    @Override
+    public @Nullable AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
+
+        return new ReindeerInventoryMenu(i, inventory, new SimpleContainer(this.inventory.getContainerSize()), this, this.getInventoryColumns());
+    }
+
+    public void openReindeerInventory(Player player) {
+        if (player.containerMenu != player.inventoryMenu) {
+            player.closeContainer();
+        }
+
+        System.out.print("Check 3 ");
+        int i = this.getInventoryColumns();
+        if(player instanceof ServerPlayer serverPlayer) {
+            serverPlayer.openMenu(this);
+            serverPlayer.openMenu(new SimpleMenuProvider(
+                    (containerId, playerInventory, player1) ->
+                            new ReindeerInventoryMenu(containerId, playerInventory, inventory, this, i),
+                    this.getDisplayName()
+            ));
+        }
+    }
+
+
+
+    public int getInventoryColumns() {
+        return 3;
+    }
+    public boolean hasInventoryChanged(Container pInventory) {
+        return this.inventory != pInventory;
+    }
+
+
+
+    protected void createInventory() {
+        SimpleContainer simplecontainer = this.inventory;
+        this.inventory = new SimpleContainer(this.getInventorySize());
+        if (simplecontainer != null) {
+            int i = Math.min(simplecontainer.getContainerSize(), this.inventory.getContainerSize());
+
+            for(int j = 0; j < i; ++j) {
+                ItemStack itemstack = simplecontainer.getItem(j);
+                if (!itemstack.isEmpty()) {
+                    this.inventory.setItem(j, itemstack.copy());
+                }
+            }
+        }
+
+
+    }
+
+    public int getInventorySize() {
+        return ReindeerInventoryMenu.getInventorySize(this.getInventoryColumns());
+    }
+
+    @Override
+    public void containerChanged(Container container) {
+    }
 
 }

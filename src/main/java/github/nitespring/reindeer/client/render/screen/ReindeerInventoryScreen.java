@@ -49,16 +49,15 @@ public class ReindeerInventoryScreen extends AbstractContainerScreen<ReindeerInv
         if (this.inventoryColumns > 0 && this.getChestSlotsSpriteLocation() != null) {
             gui.blitSprite(RenderPipelines.GUI_TEXTURED, this.getChestSlotsSpriteLocation(), 90, 54, 0, 0, i + 79, j + 17, this.inventoryColumns * 18, 54);
         }
+        if(this.mount!=null) {
+            if (this.shouldRenderSaddleSlot()) {
+                this.drawSlot(gui, i + 7, j + 35 - 18);
+            }
 
-        if (this.shouldRenderSaddleSlot()) {
-            this.drawSlot(gui, i + 7, j + 35 - 18);
-        }
-
-        if (this.shouldRenderArmorSlot()) {
-            this.drawSlot(gui, i + 7, j + 35);
-        }
-        if(gui!=null) {
-            InventoryScreen.renderEntityInInventoryFollowsMouse(gui, i + 26, j + 18, i + 78, j + 70, 17, 0.25F, this.xMouse, this.yMouse, this.mount);
+            if (this.shouldRenderArmorSlot()) {
+                this.drawSlot(gui, i + 7, j + 35);
+            }
+        InventoryScreen.renderEntityInInventoryFollowsMouse(gui, i + 26, j + 18, i + 78, j + 70, 17, 0.25F, this.xMouse, this.yMouse, this.mount);
         }
         }
 
@@ -91,14 +90,10 @@ public class ReindeerInventoryScreen extends AbstractContainerScreen<ReindeerInv
     }
 
     protected boolean shouldRenderSaddleSlot() {
-       if(this.mount!= null) {
-           return this.mount.canUseSlot(EquipmentSlot.SADDLE) && this.mount.getType().is(EntityTypeTags.CAN_EQUIP_SADDLE);
-       }else{return false;}
+        return this.mount.canUseSlot(EquipmentSlot.SADDLE) && this.mount.getType().is(EntityTypeTags.CAN_EQUIP_SADDLE);
     }
 
     protected boolean shouldRenderArmorSlot() {
-        if(this.mount!= null) {
-            return this.mount.canUseSlot(EquipmentSlot.BODY) && (this.mount.getType().is(EntityTypeTags.CAN_WEAR_HORSE_ARMOR));
-        }else{return false;}
+        return this.mount.canUseSlot(EquipmentSlot.BODY) && (this.mount.getType().is(EntityTypeTags.CAN_WEAR_HORSE_ARMOR));
     }
 }
