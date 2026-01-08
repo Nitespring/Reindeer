@@ -522,25 +522,25 @@ public abstract class AbstractReindeer extends TamableAnimal implements Containe
         }
     }
     @Override
-    public @Nullable AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
+    public @Nullable AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player player) {
 
-        return new ReindeerInventoryMenu(i, inventory, new SimpleContainer(this.inventory.getContainerSize()), this, this.getInventoryColumns());
+        return new ReindeerInventoryMenu(i, playerInventory, this.inventory, this, this.getInventoryColumns());
     }
 
     public void openReindeerInventory(Player player) {
         if (player.containerMenu != player.inventoryMenu) {
             player.closeContainer();
         }
-
         System.out.print("Check 3 ");
         int i = this.getInventoryColumns();
         if(player instanceof ServerPlayer serverPlayer) {
-            //serverPlayer.openMenu(this);
-            serverPlayer.openMenu(new SimpleMenuProvider(
+
+            serverPlayer.openMenu(this);
+            /*serverPlayer.openMenu(new SimpleMenuProvider(
                     (containerId, playerInventory, player1) ->
                             new ReindeerInventoryMenu(containerId, playerInventory, inventory, this, i),
                     this.getDisplayName()
-            ));
+            ));*/
         }
     }
 
@@ -556,6 +556,7 @@ public abstract class AbstractReindeer extends TamableAnimal implements Containe
 
 
     protected void createInventory() {
+
         SimpleContainer simplecontainer = this.inventory;
         this.inventory = new SimpleContainer(this.getInventorySize());
         if (simplecontainer != null) {

@@ -4,17 +4,21 @@ import github.nitespring.reindeer.common.entity.mob.AbstractReindeer;
 import github.nitespring.reindeer.common.entity.mob.Reindeer;
 import github.nitespring.reindeer.core.init.EntityInit;
 import github.nitespring.reindeer.core.init.MenuInit;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
+
+import javax.annotation.Nullable;
 
 public class ReindeerInventoryMenu extends AbstractContainerMenu {
     private final Container mountContainer;
@@ -45,6 +49,7 @@ public class ReindeerInventoryMenu extends AbstractContainerMenu {
                 }
             });
         }
+        System.out.print("Check Menu ");
 
         /*final boolean flag = horse instanceof Llama;
         Identifier identifier = flag ? LLAMA_ARMOR_SLOT_SPRITE : ARMOR_SLOT_SPRITE;
@@ -69,6 +74,12 @@ public class ReindeerInventoryMenu extends AbstractContainerMenu {
     protected boolean hasInventoryChanged(Container inventory) {
         return this.mount.hasInventoryChanged(inventory);
     }
+
+    public AbstractReindeer getMount() {
+        Minecraft instance = Minecraft.getInstance();
+        return mount == null ? EntityInit.REINDEER.get().create(instance.level, EntitySpawnReason.MOB_SUMMONED): mount;
+    }
+
     @Override
     public boolean stillValid(Player player) {
         return !this.hasInventoryChanged(this.mountContainer) && this.mountContainer.stillValid(player) && this.mount.isAlive() && player.isWithinEntityInteractionRange(this.mount, (double)4.0F);

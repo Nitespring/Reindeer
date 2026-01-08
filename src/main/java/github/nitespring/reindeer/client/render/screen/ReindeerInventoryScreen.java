@@ -25,22 +25,19 @@ public class ReindeerInventoryScreen extends AbstractContainerScreen<ReindeerInv
     private static final Identifier SLOT_SPRITE = Identifier.withDefaultNamespace("container/slot");
     private static final Identifier CHEST_SLOTS_SPRITE = Identifier.withDefaultNamespace("container/horse/chest_slots");
     private static final Identifier HORSE_INVENTORY_LOCATION = Identifier.withDefaultNamespace("textures/gui/container/horse.png");
-    protected final int inventoryColumns;
+    protected int inventoryColumns;
     protected float xMouse;
     protected float yMouse;
-    protected LivingEntity mount;
+    protected AbstractReindeer mount;
 
 
     public ReindeerInventoryScreen(ReindeerInventoryMenu menu, Inventory playerInventory, Component title ) {
         super(menu, playerInventory, title);
-        this.inventoryColumns=3;
+        this.mount = menu.getMount();
+        this.inventoryColumns = mount.getInventoryColumns();
+
     }
 
-    public ReindeerInventoryScreen(ReindeerInventoryMenu menu, Inventory playerInventory, Component title, int inventoryColumns, LivingEntity mount) {
-        super(menu, playerInventory, title);
-        this.inventoryColumns = inventoryColumns;
-        this.mount = mount;
-    }
     @Override
     protected void renderBg(GuiGraphics gui, float p_470831_, int p_470675_, int p_470799_) {
         int i = (this.width - this.imageWidth) / 2;
@@ -49,6 +46,7 @@ public class ReindeerInventoryScreen extends AbstractContainerScreen<ReindeerInv
         if (this.inventoryColumns > 0 && this.getChestSlotsSpriteLocation() != null) {
             gui.blitSprite(RenderPipelines.GUI_TEXTURED, this.getChestSlotsSpriteLocation(), 90, 54, 0, 0, i + 79, j + 17, this.inventoryColumns * 18, 54);
         }
+        System.out.print("Check Screen ");
         if(this.mount!=null) {
             if (this.shouldRenderSaddleSlot()) {
                 this.drawSlot(gui, i + 7, j + 35 - 18);

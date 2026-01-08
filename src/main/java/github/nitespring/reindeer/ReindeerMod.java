@@ -6,6 +6,7 @@ import github.nitespring.reindeer.core.init.ItemInit;
 import github.nitespring.reindeer.core.init.MenuInit;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.internal.NeoForgeProxy;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -22,7 +23,6 @@ import net.neoforged.neoforge.common.NeoForge;
 public class ReindeerMod {
 
     public static final String MODID = "reindeer";
-
     public static final Logger LOGGER = LogUtils.getLogger();
 
 
