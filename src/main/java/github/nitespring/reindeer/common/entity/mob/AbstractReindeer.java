@@ -23,16 +23,20 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.animal.FlyingAnimal;
+import net.minecraft.world.entity.animal.equine.AbstractChestedHorse;
 import net.minecraft.world.entity.animal.equine.AbstractHorse;
 import net.minecraft.world.entity.animal.equine.Donkey;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.ContainerEntity;
+import net.minecraft.world.entity.vehicle.boat.AbstractChestBoat;
 import net.minecraft.world.entity.vehicle.boat.ChestBoat;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.equipment.Equippable;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.pathfinder.PathType;
@@ -176,6 +180,11 @@ public abstract class AbstractReindeer extends TamableAnimal implements Containe
     }
 
     @Override
+    public SynchedEntityData getEntityData() {
+        return super.getEntityData();
+    }
+
+    @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
         builder.define(ANIMATION_TICK, 0);
@@ -188,6 +197,7 @@ public abstract class AbstractReindeer extends TamableAnimal implements Containe
         builder.define(MOVEMENT_SPEED, 0.0f);
 
     }
+
 
     @Override
     protected void addAdditionalSaveData(ValueOutput out) {
@@ -259,6 +269,12 @@ public abstract class AbstractReindeer extends TamableAnimal implements Containe
     @Override
     public void tick() {
         super.tick();
+        int itemUse = this.inventory.getContainerSize();
+        ItemStack item = this.inventory.getItem(0);
+        if(tickCount%70==0) {
+            //System.out.print(itemUse);
+        }
+
         if(hasLights()){
             if(tickCount%7==0) {
                 changeLightState();
@@ -389,7 +405,7 @@ public abstract class AbstractReindeer extends TamableAnimal implements Containe
     @Override
     public boolean canJump() {
         //return true;
-        return !this.getBlockStateOn().isAir();
+        return hasSaddle()&&!this.getBlockStateOn().isAir();
         // return this.isSaddled();
     }
 
@@ -419,7 +435,7 @@ public abstract class AbstractReindeer extends TamableAnimal implements Containe
     @Override
     public void travel(Vec3 pos) {
         if (this.isAlive()) {
-            if (this.isVehicle()) {
+            if (this.isVehicle()&&this.hasSaddle()) {
                 int accelerationValueMax=20;
                 if(getDeltaMovement().horizontalDistance()>=0.001f){
                     if(accelerationValue<accelerationValueMax){accelerationValue++;}
@@ -514,41 +530,36 @@ public abstract class AbstractReindeer extends TamableAnimal implements Containe
 
     @Override
     public void openCustomInventoryScreen(Player player) {
-        System.out.print("Check 1 ");
-        if (!this.level().isClientSide() /*&& (!this.isVehicle() || this.hasPassenger(player))*/ && this.isTame()) {
-            System.out.print("Check 2 ");
+
+        if (!this.level().isClientSide() && (!this.isVehicle() || this.hasPassenger(player)) && this.isTame()) {
+
             this.openReindeerInventory(player);
 
         }
     }
+
+
+    public boolean hasSaddle(){
+        return !this.inventory.isEmpty()&&this.inventory.getItem(0).is(Items.SADDLE);
+    }
+
     @Override
     public @Nullable AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player player) {
 
-        return new ReindeerInventoryMenu(i, playerInventory, this.inventory, this, this.getInventoryColumns());
+        return new ReindeerInventoryMenu(i, playerInventory, inventory, this);
     }
 
     public void openReindeerInventory(Player player) {
         if (player.containerMenu != player.inventoryMenu) {
             player.closeContainer();
         }
-        System.out.print("Check 3 ");
-        int i = this.getInventoryColumns();
         if(player instanceof ServerPlayer serverPlayer) {
 
             serverPlayer.openMenu(this);
-            /*serverPlayer.openMenu(new SimpleMenuProvider(
-                    (containerId, playerInventory, player1) ->
-                            new ReindeerInventoryMenu(containerId, playerInventory, inventory, this, i),
-                    this.getDisplayName()
-            ));*/
         }
     }
 
 
-
-    public int getInventoryColumns() {
-        return 3;
-    }
     public boolean hasInventoryChanged(Container pInventory) {
         return this.inventory != pInventory;
     }
@@ -558,7 +569,7 @@ public abstract class AbstractReindeer extends TamableAnimal implements Containe
     protected void createInventory() {
 
         SimpleContainer simplecontainer = this.inventory;
-        this.inventory = new SimpleContainer(this.getInventorySize());
+        this.inventory = new SimpleContainer(1);
         if (simplecontainer != null) {
             int i = Math.min(simplecontainer.getContainerSize(), this.inventory.getContainerSize());
 
@@ -568,17 +579,12 @@ public abstract class AbstractReindeer extends TamableAnimal implements Containe
                     this.inventory.setItem(j, itemstack.copy());
                 }
             }
+            //this.inventory.addListener(this);
         }
-
-
     }
-
-    public int getInventorySize() {
-        return ReindeerInventoryMenu.getInventorySize(this.getInventoryColumns());
-    }
-
     @Override
     public void containerChanged(Container container) {
+
     }
 
 }

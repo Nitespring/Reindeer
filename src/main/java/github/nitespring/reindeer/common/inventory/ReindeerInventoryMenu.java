@@ -8,6 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.EntityTypeTags;
+import net.minecraft.util.datafix.fixes.SaddleEquipmentSlotFix;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.EntitySpawnReason;
@@ -17,6 +18,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 import javax.annotation.Nullable;
 
@@ -32,24 +34,30 @@ public class ReindeerInventoryMenu extends AbstractContainerMenu {
     private static final Identifier ARMOR_SLOT_SPRITE = Identifier.withDefaultNamespace("container/slot/horse_armor");
 
     public ReindeerInventoryMenu(int containerId, Inventory playerInv) {
-        this(containerId, playerInv, new SimpleContainer(0), null, 0);
+        this(containerId, playerInv, new SimpleContainer(1), null);
 
 
     }
 
-    public ReindeerInventoryMenu(int containerId, Inventory playerInventory, Container mountContainer, AbstractReindeer mount, int inventoryColumns) {
+    public ReindeerInventoryMenu(int containerId, Inventory playerInventory, Container mountContainer, AbstractReindeer mount) {
         super(MenuInit.REINDEER_INVENTORY_MENU.get(),containerId);
         this.mountContainer = mountContainer;
         this.mount = mount;
-        if(mount!=null) {
-            Container container = mount.createEquipmentSlotContainer(EquipmentSlot.SADDLE);
-            this.addSlot(new ArmorSlot(container, mount, EquipmentSlot.SADDLE, 0, 8, 18, SADDLE_SLOT_SPRITE) {
-                public boolean isActive() {
-                    return mount.canUseSlot(EquipmentSlot.SADDLE) && mount.getType().is(EntityTypeTags.CAN_EQUIP_SADDLE);
-                }
-            });
-        }
-        System.out.print("Check Menu ");
+
+
+        this.addSlot(new Slot(mountContainer, 0, 8, 18) {
+            @Override
+            public void setChanged() {
+                this.container.setChanged();
+            }
+
+            @Override
+            public boolean mayPlace(ItemStack stack) {
+                return super.mayPlace(stack) && stack.is(Items.SADDLE);
+            }
+        });
+
+
 
         /*final boolean flag = horse instanceof Llama;
         Identifier identifier = flag ? LLAMA_ARMOR_SLOT_SPRITE : ARMOR_SLOT_SPRITE;
@@ -59,16 +67,19 @@ public class ReindeerInventoryMenu extends AbstractContainerMenu {
                 return horse.canUseSlot(EquipmentSlot.BODY) && (horse.getType().is(EntityTypeTags.CAN_WEAR_HORSE_ARMOR) || flag);
             }
         });*/
-        if (inventoryColumns > 0) {
+        /*if (inventoryColumns > 0) {
             for(int i = 0; i < 3; ++i) {
                 for(int j = 0; j < inventoryColumns; ++j) {
                     this.addSlot(new Slot(mountContainer, j + i * inventoryColumns, 80 + j * 18, 18 + i * 18));
                 }
             }
-        }
+        }*/
+
+
+
+        mountContainer.startOpen(playerInventory.player);
 
         this.addStandardInventorySlots(playerInventory, 8, 84);
-        mountContainer.startOpen(playerInventory.player);
     }
 
     protected boolean hasInventoryChanged(Container inventory) {
@@ -137,7 +148,4 @@ public class ReindeerInventoryMenu extends AbstractContainerMenu {
         return itemstack;
     }
 
-    public static int getInventorySize(int rows) {
-        return rows * 3;
-    }
 }

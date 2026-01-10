@@ -25,7 +25,7 @@ public class ReindeerInventoryScreen extends AbstractContainerScreen<ReindeerInv
     private static final Identifier SLOT_SPRITE = Identifier.withDefaultNamespace("container/slot");
     private static final Identifier CHEST_SLOTS_SPRITE = Identifier.withDefaultNamespace("container/horse/chest_slots");
     private static final Identifier HORSE_INVENTORY_LOCATION = Identifier.withDefaultNamespace("textures/gui/container/horse.png");
-    protected int inventoryColumns;
+    //protected int inventoryColumns;
     protected float xMouse;
     protected float yMouse;
     protected AbstractReindeer mount;
@@ -34,7 +34,7 @@ public class ReindeerInventoryScreen extends AbstractContainerScreen<ReindeerInv
     public ReindeerInventoryScreen(ReindeerInventoryMenu menu, Inventory playerInventory, Component title ) {
         super(menu, playerInventory, title);
         this.mount = menu.getMount();
-        this.inventoryColumns = mount.getInventoryColumns();
+        //this.inventoryColumns = mount.getInventoryColumns();
 
     }
 
@@ -43,18 +43,18 @@ public class ReindeerInventoryScreen extends AbstractContainerScreen<ReindeerInv
         int i = (this.width - this.imageWidth) / 2;
         int j = (this.height - this.imageHeight) / 2;
         gui.blit(RenderPipelines.GUI_TEXTURED, this.getBackgroundTextureLocation(), i, j, 0.0F, 0.0F, this.imageWidth, this.imageHeight, 256, 256);
-        if (this.inventoryColumns > 0 && this.getChestSlotsSpriteLocation() != null) {
+        /*if (this.inventoryColumns > 0 && this.getChestSlotsSpriteLocation() != null) {
             gui.blitSprite(RenderPipelines.GUI_TEXTURED, this.getChestSlotsSpriteLocation(), 90, 54, 0, 0, i + 79, j + 17, this.inventoryColumns * 18, 54);
-        }
-        System.out.print("Check Screen ");
+        }*/
+        this.drawSlot(gui, i + 7, j + 35 - 18);
         if(this.mount!=null) {
-            if (this.shouldRenderSaddleSlot()) {
+           /* if (this.shouldRenderSaddleSlot()) {
                 this.drawSlot(gui, i + 7, j + 35 - 18);
             }
 
             if (this.shouldRenderArmorSlot()) {
                 this.drawSlot(gui, i + 7, j + 35);
-            }
+            }*/
         InventoryScreen.renderEntityInInventoryFollowsMouse(gui, i + 26, j + 18, i + 78, j + 70, 17, 0.25F, this.xMouse, this.yMouse, this.mount);
         }
         }
@@ -87,11 +87,4 @@ public class ReindeerInventoryScreen extends AbstractContainerScreen<ReindeerInv
         return CHEST_SLOTS_SPRITE;
     }
 
-    protected boolean shouldRenderSaddleSlot() {
-        return this.mount.canUseSlot(EquipmentSlot.SADDLE) && this.mount.getType().is(EntityTypeTags.CAN_EQUIP_SADDLE);
-    }
-
-    protected boolean shouldRenderArmorSlot() {
-        return this.mount.canUseSlot(EquipmentSlot.BODY) && (this.mount.getType().is(EntityTypeTags.CAN_WEAR_HORSE_ARMOR));
-    }
 }
