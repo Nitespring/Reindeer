@@ -46,6 +46,7 @@ public class ReindeerRenderer<T extends Entity & GeoAnimatable, R extends Living
         this.shadowRadius = 0.5F;
 		withRenderLayer(ReindeerEmissiveLightsLayer::new);
 		withRenderLayer(ReindeerEmissiveNoseLayer::new);
+		withRenderLayer(ReindeerSaddleLayer::new);
           
     }
 
@@ -156,6 +157,7 @@ public class ReindeerRenderer<T extends Entity & GeoAnimatable, R extends Living
 			renderState.addGeckolibData(CustomDataTickets.LIGHT_STATE, animatable.getLightState());
 			renderState.addGeckolibData(CustomDataTickets.IS_RUDOLPH, animatable.isRudolph());
 			renderState.addGeckolibData(CustomDataTickets.IS_BABY, animatable.isBaby());
+			renderState.addGeckolibData(CustomDataTickets.HAS_SADDLE, animatable.isSaddled());
 		}
 	}
 

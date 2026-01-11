@@ -26,6 +26,7 @@ import net.minecraft.world.entity.animal.FlyingAnimal;
 import net.minecraft.world.entity.animal.equine.AbstractChestedHorse;
 import net.minecraft.world.entity.animal.equine.AbstractHorse;
 import net.minecraft.world.entity.animal.equine.Donkey;
+import net.minecraft.world.entity.npc.InventoryCarrier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.ContainerEntity;
@@ -531,13 +532,17 @@ public abstract class AbstractReindeer extends TamableAnimal implements Containe
     @Override
     public void openCustomInventoryScreen(Player player) {
 
-        if (!this.level().isClientSide() && (!this.isVehicle() || this.hasPassenger(player)) && this.isTame()) {
+        if (/*!this.level().isClientSide() &&*/ (!this.isVehicle() || this.hasPassenger(player)) && this.isTame()) {
 
             this.openReindeerInventory(player);
 
         }
     }
 
+    @Override
+    protected EntityEquipment createEquipment() {
+        return super.createEquipment();
+    }
 
     public boolean hasSaddle(){
         return !this.inventory.isEmpty()&&this.inventory.getItem(0).is(Items.SADDLE);
@@ -579,12 +584,34 @@ public abstract class AbstractReindeer extends TamableAnimal implements Containe
                     this.inventory.setItem(j, itemstack.copy());
                 }
             }
-            //this.inventory.addListener(this);
+            this.inventory.addListener(this);
         }
     }
+
+    @Override
+    public void remove(RemovalReason reason) {
+        super.remove(reason);
+        if (!this.level().isClientSide() && reason.shouldDestroy()) {
+            Containers.dropContents(this.level(), this, this.inventory);
+        }
+    }
+
     @Override
     public void containerChanged(Container container) {
+        /*this.inventory= new SimpleContainer(1);
+        if (container != null) {
+            int i = Math.min(container.getContainerSize(), this.inventory.getContainerSize());
 
+            for (int j = 0; j < i; ++j) {
+                ItemStack itemstack = container.getItem(j);
+                if (!itemstack.isEmpty()) {
+                    this.inventory.setItem(j, itemstack.copy());
+                }
+            }
+
+        }
+        this.inventory.addListener(this);*/
+        this.setItemSlot(EquipmentSlot.SADDLE, container.getItem(0));
     }
 
 }

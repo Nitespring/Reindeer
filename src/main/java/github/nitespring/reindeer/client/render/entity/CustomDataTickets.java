@@ -10,5 +10,6 @@ public class CustomDataTickets  {
     public static final DataTicket<Boolean> HAS_LIGHTS = DataTicket.create("has_lights", Boolean.class);
     public static final DataTicket<Boolean> IS_RUDOLPH = DataTicket.create("is_rudolph", Boolean.class);
     public static final DataTicket<Boolean> IS_BABY = DataTicket.create("is_baby", Boolean.class);
+    public static final DataTicket<Boolean> HAS_SADDLE = DataTicket.create("has_saddle", Boolean.class);
 
 }

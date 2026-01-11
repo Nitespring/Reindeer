@@ -45,6 +45,7 @@ public class ReindeerInventoryMenu extends AbstractContainerMenu {
         this.mount = mount;
 
 
+
         this.addSlot(new Slot(mountContainer, 0, 8, 18) {
             @Override
             public void setChanged() {
