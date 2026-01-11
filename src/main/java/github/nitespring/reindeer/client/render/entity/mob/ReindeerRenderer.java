@@ -46,8 +46,8 @@ public class ReindeerRenderer<T extends Entity & GeoAnimatable, R extends Living
         this.shadowRadius = 0.5F;
 		withRenderLayer(ReindeerEmissiveLightsLayer::new);
 		withRenderLayer(ReindeerEmissiveNoseLayer::new);
+		withRenderLayer(ReindeerChestLayer::new);
 		withRenderLayer(ReindeerSaddleLayer::new);
-          
     }
 
 	@Override
@@ -84,19 +84,40 @@ public class ReindeerRenderer<T extends Entity & GeoAnimatable, R extends Living
 
 	@Override
 	public void adjustModelBonesForRender(RenderPassInfo<R> renderPassInfo, BoneSnapshots snapshots) {
-		BoneSnapshot head = snapshots.get("head_rotation").get();
-		BoneSnapshot neck = snapshots.get("neck_rotation").get();
+		BoneSnapshot head_root = snapshots.get("head_rotation").get();
+		BoneSnapshot neck_root = snapshots.get("neck_rotation").get();
+		BoneSnapshot head = snapshots.get("head").get();
+		BoneSnapshot neck = snapshots.get("neck").get();
+
 		float headPitch =  renderPassInfo.getGeckolibData(DataTickets.ENTITY_PITCH);
 		float headYaw =  renderPassInfo.getGeckolibData(DataTickets.ENTITY_YAW);
-		head.setRotX(-0.15f*headPitch * ((float) Math.PI / 180F));
-		head.setRotY(-0.15f*headYaw * ((float) Math.PI / 180F));
-		neck.setRotX(-0.45f*headPitch * ((float) Math.PI / 180F));
-		neck.setRotY(-0.45f*headYaw * ((float) Math.PI / 180F));
+		Boolean passenger =  renderPassInfo.getGeckolibData(CustomDataTickets.HAS_PASSENGER);
+		head_root.setRotX(-0.15f*headPitch * ((float) Math.PI / 180F));
+		head_root.setRotY(-0.15f*headYaw * ((float) Math.PI / 180F));
+		neck_root.setRotX(-0.45f*headPitch * ((float) Math.PI / 180F));
+		neck_root.setRotY(-0.45f*headYaw * ((float) Math.PI / 180F));
 		if(renderPassInfo.getGeckolibData(CustomDataTickets.IS_BABY)) {
 			float headScale = 1.0f;
-			head.setScale(headScale, headScale, headScale);
+			head_root.setScale(headScale, headScale, headScale);
+		}else{
+			BoneSnapshot bridle_mouth = snapshots.get("bridle_mouth").get();
+			BoneSnapshot bridle_ropes = snapshots.get("bridle_ropes").get();
+			BoneSnapshot bridle_left = snapshots.get("bridle_rope_left").get();
+			BoneSnapshot bridle_right = snapshots.get("bridle_rope_right").get();
+			BoneSnapshot bridle_left_root = snapshots.get("bridle_left_root").get();
+			BoneSnapshot bridle_right_root = snapshots.get("bridle_right_root").get();
+			bridle_left_root.setRotX(-head.getRotX()-neck.getRotX()+0.3f*headPitch * ((float) Math.PI / 180F));
+			bridle_left_root.setRotY(-head.getRotY()-neck.getRotY()+0.3f*headYaw * ((float) Math.PI / 180F));
+			bridle_right_root.setRotX(-head.getRotX()-neck.getRotX()+0.3f*headPitch * ((float) Math.PI / 180F));
+			bridle_right_root.setRotY(-head.getRotY()-neck.getRotY()+0.3f*headYaw * ((float) Math.PI / 180F));
+
+			bridle_mouth.skipRender(!passenger);
+			bridle_ropes.skipRender(!passenger);
+			bridle_left.skipRender(!passenger);
+			bridle_right.skipRender(!passenger);
 		}
 	}
+
 
 	public static class ReindeerModel<T extends Reindeer> extends GeoModel<T> {
 		@Override
@@ -157,7 +178,9 @@ public class ReindeerRenderer<T extends Entity & GeoAnimatable, R extends Living
 			renderState.addGeckolibData(CustomDataTickets.LIGHT_STATE, animatable.getLightState());
 			renderState.addGeckolibData(CustomDataTickets.IS_RUDOLPH, animatable.isRudolph());
 			renderState.addGeckolibData(CustomDataTickets.IS_BABY, animatable.isBaby());
-			renderState.addGeckolibData(CustomDataTickets.HAS_SADDLE, animatable.isSaddled());
+			renderState.addGeckolibData(CustomDataTickets.HAS_SADDLE, animatable.hasSaddle());
+			renderState.addGeckolibData(CustomDataTickets.HAS_CHEST, animatable.hasChest());
+			renderState.addGeckolibData(CustomDataTickets.HAS_PASSENGER, animatable.isVehicle());
 		}
 	}
 

@@ -243,8 +243,8 @@ public class Reindeer extends AbstractReindeer implements GeoEntity {
         if (animal == this) {
             return false;
         }else if (animal instanceof Reindeer) {
-            Reindeer wolf = (Reindeer)animal;
-                return this.isInLove() && wolf.isInLove();
+            Reindeer mate = (Reindeer)animal;
+                return this.isInLove() && mate.isInLove();
         } else {
             return false;
         }
@@ -261,6 +261,16 @@ public class Reindeer extends AbstractReindeer implements GeoEntity {
             if (!itemstack.isEmpty()) {
                 if (this.isFood(itemstack)) {
                     return this.fedFood(player, itemstack);
+                }
+                if (itemstack.is(Items.SADDLE)&&!hasSaddle()) {
+                    this.equipSaddle(player, itemstack);
+
+                    return InteractionResult.SUCCESS;
+                }
+                if (itemstack.is(Items.CHEST)&&!hasChest()) {
+                    this.equipChest(player, itemstack);
+
+                    return InteractionResult.SUCCESS;
                 }
             }
             return super.mobInteract(player, hand);

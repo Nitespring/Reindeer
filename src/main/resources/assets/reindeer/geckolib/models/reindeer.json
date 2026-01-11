@@ -146,8 +146,13 @@
 					"pivot": [0, 30.65192, -15.2231]
 				},
 				{
-					"name": "bridle_rope_right",
+					"name": "bridle_right_root",
 					"parent": "bridle_ropes",
+					"pivot": [-3.25, 30.4109, -15.2476]
+				},
+				{
+					"name": "bridle_rope_right",
+					"parent": "bridle_right_root",
 					"pivot": [-3.25, 30.4109, -15.2476],
 					"rotation": [-27.5, 0, 0],
 					"cubes": [
@@ -155,8 +160,13 @@
 					]
 				},
 				{
-					"name": "bridle_rope_left",
+					"name": "bridle_left_root",
 					"parent": "bridle_ropes",
+					"pivot": [3.25, 30.4109, -15.2476]
+				},
+				{
+					"name": "bridle_rope_left",
+					"parent": "bridle_left_root",
 					"pivot": [3.25, 30.4109, -15.2476],
 					"rotation": [-27.5, 0, 0],
 					"cubes": [

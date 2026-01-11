@@ -1,29 +1,21 @@
 package github.nitespring.reindeer.common.inventory;
 
 import github.nitespring.reindeer.common.entity.mob.AbstractReindeer;
-import github.nitespring.reindeer.common.entity.mob.Reindeer;
-import github.nitespring.reindeer.core.init.EntityInit;
 import github.nitespring.reindeer.core.init.MenuInit;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.Identifier;
-import net.minecraft.tags.EntityTypeTags;
-import net.minecraft.util.datafix.fixes.SaddleEquipmentSlotFix;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
-import net.minecraft.world.entity.EntitySpawnReason;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.EntityReference;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.*;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
-import javax.annotation.Nullable;
-
-public class ReindeerInventoryMenu extends AbstractContainerMenu {
+public class ChestedReindeerInventoryMenu extends AbstractContainerMenu {
     private final Container mountContainer;
     private final AbstractReindeer mount;
     protected final int SLOT_SADDLE = 0;
@@ -37,41 +29,35 @@ public class ReindeerInventoryMenu extends AbstractContainerMenu {
     /*public ReindeerInventoryMenu(int containerId, Inventory playerInv) {
         this(containerId, playerInv, new SimpleContainer(1), null);
     }*/
-    public ReindeerInventoryMenu(int containerId, Inventory playerInv, RegistryFriendlyByteBuf buf) {
-        this(containerId, playerInv, new SimpleContainer(16),(AbstractReindeer) Minecraft.getInstance().level.getEntity(buf.readInt()));
+    public ChestedReindeerInventoryMenu(int containerId, Inventory playerInv, RegistryFriendlyByteBuf buf) {
+        this(containerId, playerInv, new SimpleContainer(1), (AbstractReindeer) Minecraft.getInstance().level.getEntity(buf.readUUID()));
     }
 
-    public ReindeerInventoryMenu(int containerId, Inventory playerInventory, Container mountContainer, AbstractReindeer mount) {
+    public ChestedReindeerInventoryMenu(int containerId, Inventory playerInventory, Container mountContainer, AbstractReindeer mount) {
         super(MenuInit.REINDEER_INVENTORY_MENU.get(), containerId);
         this.mountContainer = mountContainer;
         this.mount = mount;
-        Container container1 = mount.createEquipmentSlotContainer(EquipmentSlot.SADDLE);
-        this.addSlot(new ArmorSlot(container1, mount, EquipmentSlot.SADDLE, 0, 8, 18, SADDLE_SLOT_SPRITE) {
-            public boolean isActive() {
-                return mount.canUseSlot(EquipmentSlot.SADDLE);
+
+
+
+        /*this.addSlot(new Slot(mountContainer, 0, 8, 18) {
+            @Override
+            public void setChanged() {
+                this.container.setChanged();
             }
-        });
-        for(int i = 0; i < 3; ++i) {
-            for(int j = 0; j < 5; ++j) {
-                this.addSlot(new Slot(mountContainer, j + i * 5, 80 + j * 18, 18 + i * 18) {
-                    public boolean isActive() {
-                        return mount.hasChest();
-                    }
-                });
+
+            @Override
+            public boolean mayPlace(ItemStack stack) {
+                return super.mayPlace(stack) && stack.is(Items.SADDLE);
             }
-        }
-//        this.addSlot(new Slot(mountContainer, 0, 8, 18) {
-//            @Override
-//            public void setChanged() {
-//                this.container.setChanged();
-//            }
-//
-//            @Override
-//            public boolean mayPlace(ItemStack stack) {
-//                return super.mayPlace(stack) && stack.is(Items.SADDLE);
-//            }
-//        });
+        });*/
+
+
+
+
+
         mountContainer.startOpen(playerInventory.player);
+
         this.addStandardInventorySlots(playerInventory, 8, 84);
     }
 

@@ -43,18 +43,11 @@ public class ReindeerInventoryScreen extends AbstractContainerScreen<ReindeerInv
         int i = (this.width - this.imageWidth) / 2;
         int j = (this.height - this.imageHeight) / 2;
         gui.blit(RenderPipelines.GUI_TEXTURED, this.getBackgroundTextureLocation(), i, j, 0.0F, 0.0F, this.imageWidth, this.imageHeight, 256, 256);
-        /*if (this.inventoryColumns > 0 && this.getChestSlotsSpriteLocation() != null) {
-            gui.blitSprite(RenderPipelines.GUI_TEXTURED, this.getChestSlotsSpriteLocation(), 90, 54, 0, 0, i + 79, j + 17, this.inventoryColumns * 18, 54);
-        }*/
+        if (this.getChestSlotsSpriteLocation() != null&&mount.hasChest()) {
+            gui.blitSprite(RenderPipelines.GUI_TEXTURED, this.getChestSlotsSpriteLocation(), 90, 54, 0, 0, i + 79, j + 17, 5 * 18, 54);
+        }
         this.drawSlot(gui, i + 7, j + 35 - 18);
         if(this.mount!=null) {
-           /* if (this.shouldRenderSaddleSlot()) {
-                this.drawSlot(gui, i + 7, j + 35 - 18);
-            }
-
-            if (this.shouldRenderArmorSlot()) {
-                this.drawSlot(gui, i + 7, j + 35);
-            }*/
         InventoryScreen.renderEntityInInventoryFollowsMouse(gui, i + 26, j + 18, i + 78, j + 70, 17, 0.25F, this.xMouse, this.yMouse, this.mount);
         }
         }

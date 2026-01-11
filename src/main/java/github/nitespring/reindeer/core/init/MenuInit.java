@@ -26,8 +26,11 @@ public class MenuInit{
     public static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(BuiltInRegistries.MENU,
             ReindeerMod.MODID);
 
+//    public static final DeferredHolder<MenuType<?>,MenuType<ReindeerInventoryMenu>> REINDEER_INVENTORY_MENU = MENUS.register("reindeer_inventory_menu",
+//            () -> new MenuType(ReindeerInventoryMenu::new, FeatureFlags.DEFAULT_FLAGS));
+
     public static final DeferredHolder<MenuType<?>,MenuType<ReindeerInventoryMenu>> REINDEER_INVENTORY_MENU = MENUS.register("reindeer_inventory_menu",
-            () -> new MenuType(ReindeerInventoryMenu::new, FeatureFlags.DEFAULT_FLAGS));
+            () -> IMenuTypeExtension.create(ReindeerInventoryMenu::new));
 
     public static void register(IEventBus eventBus) {
         MENUS.register(eventBus);
