@@ -1,12 +1,14 @@
 package github.nitespring.reindeer.core.init;
 
 import github.nitespring.reindeer.ReindeerMod;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.*;
+import net.minecraft.world.item.equipment.Equippable;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -37,6 +39,11 @@ public class ItemInit {
 
 	public static final DeferredItem<Item> REINDEER_ANTLER = registerSimpleItem(
 			"reindeer_antler", 64);
+
+	public static final DeferredItem<Item> REINDEER_SADDLE = registerItem(
+			"reindeer_saddle", (properties) -> new Item(properties
+					.stacksTo(1)
+					.component(DataComponents.EQUIPPABLE, Equippable.saddle())));
 
 	private static <T extends Entity> DeferredItem<Item> registerSpawnEgg(DeferredHolder<EntityType<?>,EntityType<T>> entityType) {
 		return registerItem(
@@ -72,6 +79,7 @@ public class ItemInit {
 								output.accept(REINDEER_ANTLER.get());
 								output.accept(RAW_REINDEER_MEAT.get());
 								output.accept(COOKED_REINDEER_MEAT.get());
+								output.accept(REINDEER_SADDLE.get());
 							}).build());
 
 

@@ -19,6 +19,7 @@ public class CustomItemModelProvider extends ModelProvider {
         itemModels.generateFlatItem(ItemInit.RAW_REINDEER_MEAT.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ItemInit.COOKED_REINDEER_MEAT.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ItemInit.REINDEER_ANTLER.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ItemInit.REINDEER_SADDLE.get(), ModelTemplates.FLAT_ITEM);
 
     }
 

@@ -3,6 +3,7 @@ package github.nitespring.reindeer.common.entity.mob;
 import com.google.common.graph.Network;
 import github.nitespring.reindeer.common.entity.misc.DamageHitboxEntity;
 import github.nitespring.reindeer.common.inventory.ReindeerInventoryMenu;
+import github.nitespring.reindeer.core.init.ItemInit;
 import github.nitespring.reindeer.core.init.MenuInit;
 import net.minecraft.core.Holder;
 import net.minecraft.core.NonNullList;
@@ -154,6 +155,7 @@ public abstract class AbstractReindeer extends TamableAnimal implements Containe
         return this.entityData.get(MOVEMENT_SPEED);
     }
 
+
     public void setMovementSpeed(float anim) {
         this.entityData.set(MOVEMENT_SPEED, anim);
     }
@@ -183,8 +185,13 @@ public abstract class AbstractReindeer extends TamableAnimal implements Containe
         this.entityData.set(HAS_SADDLE, anim);
     }
 
+    public SimpleContainer getReindeerInventory() {
+        return inventory;
+    }
+
     public boolean hasChest() {
         return this.entityData.get(HAS_CHEST);
+        //return this.inventory.getItem(0).is(Items.CHEST);
     }
 
     public void setChest(boolean anim) {
@@ -253,6 +260,7 @@ public abstract class AbstractReindeer extends TamableAnimal implements Containe
         this.setChest(in.getBooleanOr("HasChest",false));
 
         this.createInventory();
+
         for(ItemStackWithSlot itemstackwithslot : in.listOrEmpty("Items", ItemStackWithSlot.CODEC)) {
             if (itemstackwithslot.isValidInContainer(this.inventory.getContainerSize())) {
                 this.inventory.setItem(itemstackwithslot.slot(), itemstackwithslot.stack());
@@ -344,27 +352,33 @@ public abstract class AbstractReindeer extends TamableAnimal implements Containe
     }
     @Override
     public InteractionResult mobInteract(Player player, InteractionHand hand) {
+        ItemStack itemstack = player.getItemInHand(hand);
         if (!this.isVehicle() && !this.isBaby()) {
-            if (this.isTame() && player.isSecondaryUseActive()) {
-                this.openCustomInventoryScreen(player);
-                return InteractionResult.SUCCESS;
+            if((isTame()||hasChest())&&player.isSecondaryUseActive()) {
+                    this.openCustomInventoryScreen(player);
+                    return InteractionResult.SUCCESS;
             } else {
-                ItemStack itemstack = player.getItemInHand(hand);
                 if (!itemstack.isEmpty()) {
+                    if (!hasChest() && itemstack.is(Items.CHEST)) {
+                        this.equipChest(player, itemstack);
+                        return InteractionResult.SUCCESS;
+                    }
+                    /*if (!hasSaddle() && itemstack.is(Items.SADDLE)) {
+                        this.equipSaddle(player, itemstack);
+                        return InteractionResult.SUCCESS;
+                    }*/
                     InteractionResult interactionresult = itemstack.interactLivingEntity(player, this, hand);
                     if (interactionresult.consumesAction()) {
                         return interactionresult;
                     }
                 }
-
-                if (this.isTame() && player == this.getOwner()&&hasSaddle()) {
+                if (isTame() && player == this.getOwner() && hasSaddle()) {
+                    //if (hasSaddle()) {
                     this.doPlayerRide(player);
                 }
-                return InteractionResult.SUCCESS;
             }
-        } else {
-            return super.mobInteract(player, hand);
         }
+        return super.mobInteract(player, hand);
     }
 
     @Override
@@ -409,19 +423,31 @@ public abstract class AbstractReindeer extends TamableAnimal implements Containe
     private boolean isWoodSoundType(SoundType soundType) {
         return soundType == SoundType.WOOD || soundType == SoundType.NETHER_WOOD || soundType == SoundType.STEM || soundType == SoundType.CHERRY_WOOD || soundType == SoundType.BAMBOO_WOOD;
     }
-
+    public boolean hasSpecialSaddleType(){
+        if(!isSaddled()){
+            return false;
+        }else {
+            ItemStack item = getItemBySlot(EquipmentSlot.SADDLE);
+            if(item.is(ItemInit.REINDEER_SADDLE)){
+                return true;
+            }else{
+                return false;
+            }
+        }
+    }
 
 
     @Override
     public void onPlayerJump(int i) {
-        this.setDeltaMovement(this.getDeltaMovement().add(0, this.getJumpPower(), 0));
+        Vec3 mov = this.getDeltaMovement();
+        this.setDeltaMovement(this.getDeltaMovement().add(mov.x(), this.getJumpPower(), mov.z()));
         playJumpSound();
     }
 
     @Override
     public boolean canJump() {
 
-        return this.hasSaddle();
+        return this.hasSaddle()&&onGround();
     }
 
     @Override
@@ -451,14 +477,14 @@ public abstract class AbstractReindeer extends TamableAnimal implements Containe
     public void travel(Vec3 pos) {
         if (this.isAlive()) {
             if (this.isVehicle()&&this.hasSaddle()) {
-                int accelerationValueMax=20;
+                /*int accelerationValueMax=20;
                 if(getDeltaMovement().horizontalDistance()>=0.001f){
                     if(accelerationValue<accelerationValueMax){accelerationValue++;}
                 }else{
                     accelerationValue=0;
                 }
-                float actualAccelerationValue = 0.5f + 0.5f*Math.min(1.0f,accelerationValue/accelerationValueMax);
-                if (this.onGround()) {
+                float actualAccelerationValue = 0.5f + 0.5f*Math.min(1.0f,accelerationValue/accelerationValueMax);*/
+                if (!hasSpecialSaddleType()||(hasSpecialSaddleType()&&onGround())) {
 
                     LivingEntity passenger = (LivingEntity) getControllingPassenger();
                     this.yRotO = getYRot();
@@ -476,7 +502,7 @@ public abstract class AbstractReindeer extends TamableAnimal implements Containe
                     if (z <= 0)
                         z *= 0.25f;
 
-                    this.setSpeed((float) (actualAccelerationValue*this.getAttributeValue(Attributes.MOVEMENT_SPEED)));
+                    this.setSpeed((float) (/*actualAccelerationValue*/1.25f*this.getAttributeValue(Attributes.MOVEMENT_SPEED)));
                     super.travel(new Vec3(x, pos.y, z));
                 } else {
                     LivingEntity passenger = (LivingEntity) getControllingPassenger();
@@ -501,11 +527,11 @@ public abstract class AbstractReindeer extends TamableAnimal implements Containe
                     if (z <= 0)
                         z *= 0.25f;
 
-                    this.setSpeed((float) (this.getAttributeValue(Attributes.FLYING_SPEED)*actualAccelerationValue));
-                    super.travelFlying(new Vec3(x, y, z), (float) (actualAccelerationValue*this.getAttributeValue(Attributes.FLYING_SPEED)));
+                    this.setSpeed((float) (this.getAttributeValue(Attributes.FLYING_SPEED)/*actualAccelerationValue*/));
+                    super.travelFlying(new Vec3(x, y, z), (float) (/*actualAccelerationValue*/this.getAttributeValue(Attributes.FLYING_SPEED)));
                 }
             } else {
-                accelerationValue=0;
+                //accelerationValue=0;
                 super.travel(pos);
             }
         }
@@ -538,10 +564,12 @@ public abstract class AbstractReindeer extends TamableAnimal implements Containe
     }
     protected void equipChest(Player player, ItemStack chestStack) {
         this.setChest(true);
+        this.inventory.setItem(0, new ItemStack(Items.CHEST));
         this.playChestEquipsSound();
         chestStack.consume(1, player);
         this.createInventory();
     }
+
 
     @Override
     protected void propagateFallToPassengers(double fallDistance, float damageMultiplier, DamageSource damageSource) {
@@ -565,13 +593,11 @@ public abstract class AbstractReindeer extends TamableAnimal implements Containe
     @Override
     public void openCustomInventoryScreen(Player player) {
 
-        if (!this.level().isClientSide() && (!this.isVehicle() || this.hasPassenger(player)) && this.isTame()) {
+        if (!this.level().isClientSide() && (!this.isVehicle() || this.hasPassenger(player))) {
                 this.openReindeerInventory(player);
 
         }
     }
-
-
 
 
     @Override
@@ -599,7 +625,7 @@ public abstract class AbstractReindeer extends TamableAnimal implements Containe
     protected void createInventory() {
 
         SimpleContainer simplecontainer = this.inventory;
-        this.inventory = new SimpleContainer(16);
+        this.inventory = new SimpleContainer(17);
         if (simplecontainer != null) {
             int i = Math.min(simplecontainer.getContainerSize(), this.inventory.getContainerSize());
 
@@ -623,20 +649,14 @@ public abstract class AbstractReindeer extends TamableAnimal implements Containe
 
     @Override
     public void containerChanged(Container container) {
-        /*this.inventory= new SimpleContainer(1);
-        if (container != null) {
-            int i = Math.min(container.getContainerSize(), this.inventory.getContainerSize());
-
-            for (int j = 0; j < i; ++j) {
-                ItemStack itemstack = container.getItem(j);
-                if (!itemstack.isEmpty()) {
-                    this.inventory.setItem(j, itemstack.copy());
-                }
+        if(container.getItem(0).is(Items.CHEST)){
+            this.setChest(true);
+        }else{
+            this.setChest(false);
+            if (!this.level().isClientSide()) {
+                Containers.dropContents(this.level(), this, this.inventory);
             }
-
         }
-        this.inventory.addListener(this);*/
-        //this.setItemSlot(EquipmentSlot.SADDLE, container.getItem(0));
     }
 
 }

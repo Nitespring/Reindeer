@@ -28,8 +28,8 @@ public class ModRegistrationEventHandler {
 				.add(Attributes.KNOCKBACK_RESISTANCE, 0.1f)
 				.add(Attributes.FALL_DAMAGE_MULTIPLIER, 0.0f)
 				.add(Attributes.STEP_HEIGHT, 1.0f)
-				.add(Attributes.JUMP_STRENGTH, 0.6f)
-				.add(Attributes.GRAVITY, 0.04f)
+				.add(Attributes.JUMP_STRENGTH, 0.75f)
+				//.add(Attributes.GRAVITY, 0.04f)
 				.add(Attributes.FLYING_SPEED, 0.15f);
 
 		event.put(EntityInit.REINDEER.get(), reindeerAttributes.build());

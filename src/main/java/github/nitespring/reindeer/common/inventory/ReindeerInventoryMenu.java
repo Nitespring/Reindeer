@@ -1,5 +1,6 @@
 package github.nitespring.reindeer.common.inventory;
 
+import github.nitespring.reindeer.ReindeerMod;
 import github.nitespring.reindeer.common.entity.mob.AbstractReindeer;
 import github.nitespring.reindeer.common.entity.mob.Reindeer;
 import github.nitespring.reindeer.core.init.EntityInit;
@@ -20,25 +21,21 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class ReindeerInventoryMenu extends AbstractContainerMenu {
     private final Container mountContainer;
     private final AbstractReindeer mount;
-    protected final int SLOT_SADDLE = 0;
-    protected final int SLOT_BODY_ARMOR = 1;
-    protected final int SLOT_INVENTORY_START = 2;
-    protected static final int INVENTORY_ROWS = 3;
     private static final Identifier SADDLE_SLOT_SPRITE = Identifier.withDefaultNamespace("container/slot/saddle");
-    private static final Identifier LLAMA_ARMOR_SLOT_SPRITE = Identifier.withDefaultNamespace("container/slot/llama_armor");
+    private static final Identifier CHEST_SLOT_SPRITE = Identifier.withDefaultNamespace("container/slot/chest");
     private static final Identifier ARMOR_SLOT_SPRITE = Identifier.withDefaultNamespace("container/slot/horse_armor");
 
     /*public ReindeerInventoryMenu(int containerId, Inventory playerInv) {
         this(containerId, playerInv, new SimpleContainer(1), null);
     }*/
     public ReindeerInventoryMenu(int containerId, Inventory playerInv, RegistryFriendlyByteBuf buf) {
-        this(containerId, playerInv, new SimpleContainer(16),(AbstractReindeer) Minecraft.getInstance().level.getEntity(buf.readInt()));
+
+        this(containerId, playerInv, new SimpleContainer(17),(AbstractReindeer) Minecraft.getInstance().level.getEntity(buf.readInt()));
     }
 
     public ReindeerInventoryMenu(int containerId, Inventory playerInventory, Container mountContainer, AbstractReindeer mount) {
@@ -51,9 +48,30 @@ public class ReindeerInventoryMenu extends AbstractContainerMenu {
                 return mount.canUseSlot(EquipmentSlot.SADDLE);
             }
         });
+        this.addSlot(new Slot(mountContainer, 0, 8, 36) {
+            @Override
+            public void setChanged() {
+                this.container.setChanged();
+            }
+
+            /*@Override
+            public @Nullable Identifier getNoItemIcon() {
+                return CHEST_SLOT_SPRITE;
+            }*/
+
+            @Override
+            public boolean mayPlace(ItemStack stack) {
+                return super.mayPlace(stack) && stack.is(Items.CHEST);
+            }
+            @Override
+            public int getMaxStackSize() {
+                return 1;
+            }
+        });
+        int s = 1;
         for(int i = 0; i < 3; ++i) {
             for(int j = 0; j < 5; ++j) {
-                this.addSlot(new Slot(mountContainer, j + i * 5, 80 + j * 18, 18 + i * 18) {
+                this.addSlot(new Slot(mountContainer, s + j + i * 5, 80 + j * 18, 18 + i * 18) {
                     public boolean isActive() {
                         return mount.hasChest();
                     }

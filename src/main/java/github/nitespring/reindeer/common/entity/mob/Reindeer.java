@@ -251,10 +251,10 @@ public class Reindeer extends AbstractReindeer implements GeoEntity {
     }
     @Override
     public InteractionResult mobInteract(Player player, InteractionHand hand) {
-        if (!this.isVehicle() && this.isTame() && player.isSecondaryUseActive()) {
+       /* if (!this.isVehicle() && (this.isTame()||hasChest()) && player.isSecondaryUseActive()) {
             this.openCustomInventoryScreen(player);
             return InteractionResult.SUCCESS;
-        }
+        }*/
         boolean flag = !this.isBaby() && this.isTame() && player.isSecondaryUseActive();
         if (!this.isVehicle() && !flag) {
             ItemStack itemstack = player.getItemInHand(hand);
@@ -262,21 +262,9 @@ public class Reindeer extends AbstractReindeer implements GeoEntity {
                 if (this.isFood(itemstack)) {
                     return this.fedFood(player, itemstack);
                 }
-                if (itemstack.is(Items.SADDLE)&&!hasSaddle()) {
-                    this.equipSaddle(player, itemstack);
-
-                    return InteractionResult.SUCCESS;
-                }
-                if (itemstack.is(Items.CHEST)&&!hasChest()) {
-                    this.equipChest(player, itemstack);
-
-                    return InteractionResult.SUCCESS;
-                }
             }
-            return super.mobInteract(player, hand);
-        } else {
-            return super.mobInteract(player, hand);
         }
+        return super.mobInteract(player, hand);
     }
     public InteractionResult fedFood(Player player, ItemStack stack) {
         boolean flag = this.handleEating(player, stack);

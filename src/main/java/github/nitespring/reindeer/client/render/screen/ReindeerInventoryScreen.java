@@ -1,5 +1,6 @@
 package github.nitespring.reindeer.client.render.screen;
 
+import github.nitespring.reindeer.ReindeerMod;
 import github.nitespring.reindeer.common.entity.mob.AbstractReindeer;
 import github.nitespring.reindeer.common.inventory.ReindeerInventoryMenu;
 import net.minecraft.client.gui.GuiGraphics;
@@ -25,6 +26,7 @@ public class ReindeerInventoryScreen extends AbstractContainerScreen<ReindeerInv
     private static final Identifier SLOT_SPRITE = Identifier.withDefaultNamespace("container/slot");
     private static final Identifier CHEST_SLOTS_SPRITE = Identifier.withDefaultNamespace("container/horse/chest_slots");
     private static final Identifier HORSE_INVENTORY_LOCATION = Identifier.withDefaultNamespace("textures/gui/container/horse.png");
+    private static final Identifier CHEST_SLOT_SPRITE = Identifier.fromNamespaceAndPath(ReindeerMod.MODID,"textures/gui/sprites/container/slot/chest.png");
     //protected int inventoryColumns;
     protected float xMouse;
     protected float yMouse;
@@ -34,7 +36,6 @@ public class ReindeerInventoryScreen extends AbstractContainerScreen<ReindeerInv
     public ReindeerInventoryScreen(ReindeerInventoryMenu menu, Inventory playerInventory, Component title ) {
         super(menu, playerInventory, title);
         this.mount = menu.getMount();
-        //this.inventoryColumns = mount.getInventoryColumns();
 
     }
 
@@ -47,6 +48,8 @@ public class ReindeerInventoryScreen extends AbstractContainerScreen<ReindeerInv
             gui.blitSprite(RenderPipelines.GUI_TEXTURED, this.getChestSlotsSpriteLocation(), 90, 54, 0, 0, i + 79, j + 17, 5 * 18, 54);
         }
         this.drawSlot(gui, i + 7, j + 35 - 18);
+        this.drawSlot(gui, i + 7, j + 35);
+        gui.blit(RenderPipelines.GUI_TEXTURED, CHEST_SLOT_SPRITE, i + 8, j + 36, 0.0F, 0.0F, 16, 16, 16, 16);
         if(this.mount!=null) {
         InventoryScreen.renderEntityInInventoryFollowsMouse(gui, i + 26, j + 18, i + 78, j + 70, 17, 0.25F, this.xMouse, this.yMouse, this.mount);
         }
