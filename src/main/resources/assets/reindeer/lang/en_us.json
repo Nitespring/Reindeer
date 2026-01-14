@@ -10,6 +10,9 @@
   "item.reindeer.reindeer_antler": "Reindeer Antler",
   "item.reindeer.raw_reindeer_meat": "Raw Reindeer Meat",
   "item.reindeer.cooked_reindeer_meat": "Cooked Reindeer Meat",
+  "item.reindeer.reindeer_saddle": "Enchanted Reindeer Saddle",
+
+  "tooltip.reindeer.reindeer_saddle": "Allows You to Fly your Reindeer",
 
 
   "block.reindeer.example_block": "Example Block",

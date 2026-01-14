@@ -4,6 +4,7 @@ import github.nitespring.reindeer.core.datagen.CustomItemModelProvider;
 import github.nitespring.reindeer.core.init.EntityInit;
 import github.nitespring.reindeer.core.init.ItemInit;
 import github.nitespring.reindeer.core.init.MenuInit;
+import github.nitespring.reindeer.core.init.SoundInit;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.internal.NeoForgeProxy;
@@ -37,6 +38,8 @@ public class ReindeerMod {
         EntityInit.register(modEventBus);
 
         MenuInit.register(modEventBus);
+
+        SoundInit.register(modEventBus);
 
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }

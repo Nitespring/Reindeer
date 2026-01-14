@@ -5,6 +5,8 @@ import github.nitespring.reindeer.common.entity.misc.DamageHitboxEntity;
 import github.nitespring.reindeer.common.inventory.ReindeerInventoryMenu;
 import github.nitespring.reindeer.core.init.ItemInit;
 import github.nitespring.reindeer.core.init.MenuInit;
+import github.nitespring.reindeer.core.init.SoundInit;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.ListTag;
@@ -40,6 +42,7 @@ import net.minecraft.world.item.equipment.Equippable;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.level.storage.ValueInput;
@@ -299,7 +302,21 @@ public abstract class AbstractReindeer extends TamableAnimal implements Containe
     @Override
     public void tick() {
         super.tick();
+        if(isSaddled()){
+            switch(getMovementState()){
+                case 1:
+                    if(tickCount%5==0){
+                        this.playChimeSound();
+                    }
+                    break;
+                case 2:
+                    if(tickCount%3==0){
+                        this.playChimeSound();
+                    }
+                    break;
+            }
 
+        }
         if(hasLights()){
             if(tickCount%7==0) {
                 changeLightState();
@@ -446,8 +463,7 @@ public abstract class AbstractReindeer extends TamableAnimal implements Containe
 
     @Override
     public boolean canJump() {
-
-        return this.hasSaddle()&&onGround();
+        return this.hasSaddle()&&(onGround()||isInWater());
     }
 
     @Override
@@ -556,6 +572,7 @@ public abstract class AbstractReindeer extends TamableAnimal implements Containe
 
 
 
+
     protected void equipSaddle(Player player, ItemStack stack) {
         //setSaddle(true);
         setItemSlotAndDropWhenKilled(EquipmentSlot.SADDLE,stack.copy());
@@ -573,7 +590,9 @@ public abstract class AbstractReindeer extends TamableAnimal implements Containe
 
     @Override
     protected void propagateFallToPassengers(double fallDistance, float damageMultiplier, DamageSource damageSource) {
-
+        if(!hasSpecialSaddleType()){
+            super.propagateFallToPassengers(fallDistance,0.4f * damageMultiplier, damageSource);
+        }
     }
     protected void playChestEquipsSound() {
         this.playSound(SoundEvents.DONKEY_CHEST, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
@@ -583,6 +602,10 @@ public abstract class AbstractReindeer extends TamableAnimal implements Containe
     }
     protected void playJumpSound() {
         this.playSound(SoundEvents.HORSE_JUMP, 0.4F, 1.0F);
+    }
+
+    protected void playChimeSound() {
+        this.playSound(SoundInit.REINDEER_CHIME.get(), 1.0f, 1.0F);
     }
     @Override
     public @Nullable AgeableMob getBreedOffspring(ServerLevel serverLevel, AgeableMob ageableMob) {
@@ -599,6 +622,10 @@ public abstract class AbstractReindeer extends TamableAnimal implements Containe
         }
     }
 
+    @Override
+    public void aiStep() {
+        super.aiStep();
+    }
 
     @Override
     public @Nullable AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player player) {

@@ -13,7 +13,9 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.world.*;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.goal.*;
+import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.animal.equine.AbstractHorse;
 import net.minecraft.world.entity.animal.equine.Horse;
 import net.minecraft.world.entity.animal.wolf.Wolf;
 import net.minecraft.world.entity.animal.wolf.WolfSoundVariants;
@@ -50,6 +52,19 @@ public class Reindeer extends AbstractReindeer implements GeoEntity {
     private static final EntityDataAccessor<Integer> COLOUR = SynchedEntityData.defineId(Reindeer.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Boolean> RUDOLPH = SynchedEntityData.defineId(Reindeer.class, EntityDataSerializers.BOOLEAN);
     //private static final EntityDataAccessor<Boolean> IS_BABY = SynchedEntityData.defineId(Reindeer.class, EntityDataSerializers.BOOLEAN);
+    private static final TargetingConditions.Selector PARENT_HORSE_SELECTOR = (p_479663_, p_479197_) -> {
+        boolean var10000;
+        if (p_479663_ instanceof AbstractHorse abstracthorse) {
+            if (abstracthorse.isBred()) {
+                var10000 = true;
+                return var10000;
+            }
+        }
+
+        var10000 = false;
+        return var10000;
+    };
+    private static final TargetingConditions MOMMY_TARGETING = TargetingConditions.forNonCombat().range((double)16.0F).ignoreLineOfSight().selector(PARENT_HORSE_SELECTOR);
 
     protected AnimatableInstanceCache factory = GeckoLibUtil.createInstanceCache(this);
 
@@ -167,8 +182,8 @@ public class Reindeer extends AbstractReindeer implements GeoEntity {
 
     @Override
     protected void registerGoals() {
-        /*
-        this.goalSelector.addGoal(4, new FollowParentGoal(this, (double)1.0F));*/
+
+        this.goalSelector.addGoal(4, new FollowParentGoal(this, (double)1.0F));
         this.goalSelector.addGoal(2, new BreedGoal(this, (double)1.0F, Reindeer.class));
         this.goalSelector.addGoal(2, new PanicGoal(this, (double)1.2F));
         this.goalSelector.addGoal(6, new WaterAvoidingRandomStrollGoal(this, 0.7));
@@ -205,6 +220,28 @@ public class Reindeer extends AbstractReindeer implements GeoEntity {
             }
         }
         return reindeer;
+    }
+    @Override
+    public void aiStep() {
+        super.aiStep();
+        if (this.level() instanceof ServerLevel serverlevel && this.isAlive()) {
+            if (this.random.nextInt(900) == 0 && this.deathTime == 0) {
+                this.heal(1.0F);
+            }
+            this.followMommy(serverlevel);
+        }
+    }
+    protected void followMommy(ServerLevel level) {
+        if (this.isBaby()) {
+            LivingEntity livingentity = level.getNearestEntity(AbstractHorse.class, MOMMY_TARGETING, this, this.getX(), this.getY(), this.getZ(), this.getBoundingBox().inflate((double)16.0F));
+            if (livingentity != null && this.distanceToSqr(livingentity) > (double)4.0F) {
+                this.navigation.createPath(livingentity, 0);
+            }
+        }
+
+    }
+    protected boolean canParent() {
+        return !this.isVehicle() && !this.isPassenger() && this.isTame() && !this.isBaby() && this.getHealth() >= this.getMaxHealth() && this.isInLove();
     }
 
     @Override

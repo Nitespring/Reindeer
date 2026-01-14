@@ -1,13 +1,19 @@
 package github.nitespring.reindeer.core.init;
 
 import github.nitespring.reindeer.ReindeerMod;
+import github.nitespring.reindeer.common.ReindeerSaddle;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlotGroup;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.*;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.equipment.Equippable;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -40,9 +46,23 @@ public class ItemInit {
 	public static final DeferredItem<Item> REINDEER_ANTLER = registerSimpleItem(
 			"reindeer_antler", 64);
 
-	public static final DeferredItem<Item> REINDEER_SADDLE = registerItem(
-			"reindeer_saddle", (properties) -> new Item(properties
+	public static final DeferredItem<ReindeerSaddle> REINDEER_SADDLE = registerItem(
+			"reindeer_saddle", (properties) -> new ReindeerSaddle(properties
 					.stacksTo(1)
+					.rarity(Rarity.RARE)
+					.attributes(ItemAttributeModifiers.builder()
+							.add(Attributes.GRAVITY, new AttributeModifier(
+									Identifier.fromNamespaceAndPath(ReindeerMod.MODID,"reindeer_saddle_gravity_modifier"),
+									-0.04f,
+									AttributeModifier.Operation.ADD_VALUE),
+								EquipmentSlotGroup.SADDLE)
+							.add(Attributes.FALL_DAMAGE_MULTIPLIER, new AttributeModifier(
+									Identifier.fromNamespaceAndPath(ReindeerMod.MODID,"reindeer_saddle_fall_damage_modifier"),
+									-1.0f,
+									AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL),
+								EquipmentSlotGroup.SADDLE)
+							.build())
+					.component(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true)
 					.component(DataComponents.EQUIPPABLE, Equippable.saddle())));
 
 	private static <T extends Entity> DeferredItem<Item> registerSpawnEgg(DeferredHolder<EntityType<?>,EntityType<T>> entityType) {

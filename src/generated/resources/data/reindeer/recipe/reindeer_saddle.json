@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "reindeer_saddle",
+  "key": {
+    "A": "minecraft:amethyst_shard",
+    "D": "minecraft:diamond",
+    "I": "minecraft:iron_ingot",
+    "L": "minecraft:leather",
+    "S": "minecraft:saddle",
+    "W": "minecraft:red_wool"
+  },
+  "pattern": [
+    "ADA",
+    "WSW",
+    "LIL"
+  ],
+  "result": {
+    "count": 1,
+    "id": "reindeer:reindeer_saddle"
+  }
+}

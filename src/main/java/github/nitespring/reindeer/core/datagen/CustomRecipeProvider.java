@@ -3,11 +3,10 @@ package github.nitespring.reindeer.core.datagen;
 import github.nitespring.reindeer.ReindeerMod;
 import github.nitespring.reindeer.core.init.ItemInit;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.recipes.RecipeCategory;
-import net.minecraft.data.recipes.RecipeOutput;
-import net.minecraft.data.recipes.RecipeProvider;
-import net.minecraft.data.recipes.SimpleCookingRecipeBuilder;
+import net.minecraft.data.recipes.*;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -47,6 +46,23 @@ public class CustomRecipeProvider extends RecipeProvider {
     @Override
     protected void buildRecipes() {
         createFoodCookingRecipes(ItemInit.RAW_REINDEER_MEAT,ItemInit.COOKED_REINDEER_MEAT,0.25f, 200);
+
+        ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM), RecipeCategory.TRANSPORTATION, ItemInit.REINDEER_SADDLE)
+                .pattern("ADA")
+                .pattern("WSW")
+                .pattern("LIL")
+                .define('A', Items.AMETHYST_SHARD)
+                .define('D', Items.DIAMOND)
+                .define('W', Items.RED_WOOL)
+                .define('S', Items.SADDLE)
+                .define('I', Items.IRON_INGOT)
+                .define('L', Items.LEATHER)
+                .unlockedBy("has_saddle", has(Items.SADDLE))
+                .unlockedBy("has_iron_ingot", has(Items.IRON_INGOT))
+                .unlockedBy("has_diamond", has(Items.DIAMOND))
+                .unlockedBy("has_amethyst_shard", has(Items.AMETHYST_SHARD))
+                .group(getItemName(ItemInit.REINDEER_SADDLE))
+                .save(output);
     }
 
 

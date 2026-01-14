@@ -1,0 +1,8 @@
+{
+        "entity.reindeer.chime": {
+		"sounds": [
+			{"name":"reindeer:reindeer_bell_chime"}
+		],
+		"subtitle": "subtitles.reindeer.chime"
+	}
+}
