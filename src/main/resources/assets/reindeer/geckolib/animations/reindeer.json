@@ -540,14 +540,14 @@
 						"vector": ["12.5-5*math.cos(query.anim_time*180)", 0, 0]
 					}
 				},
-				"bridle_rope_left": {
-					"rotation": {
-						"vector": ["12.5-5*math.cos(query.anim_time*180)", 0, 0]
-					}
-				},
 				"reindeer": {
 					"position": {
 						"vector": [0, "2.5*math.max(0,math.sin(query.anim_time*180))", 0]
+					}
+				},
+				"bridle_rope_left": {
+					"rotation": {
+						"vector": ["12.5-5*math.cos(query.anim_time*180)", 0, 0]
 					}
 				}
 			}
