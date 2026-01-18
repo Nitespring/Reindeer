@@ -1,6 +1,7 @@
 package github.nitespring.reindeer.core.init;
 
 import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.food.Foods;
 
 public class FoodRegistry {
 
@@ -11,6 +12,10 @@ public class FoodRegistry {
     public static final FoodProperties COOKED_REINDEER = (new FoodProperties.Builder())
             .nutrition(7)
             .saturationModifier(0.8F)
+            .build();
+    public static final FoodProperties BUTTER_COOKIE = (new FoodProperties.Builder())
+            .nutrition(3)
+            .saturationModifier(0.3F)
             .build();
 
 }

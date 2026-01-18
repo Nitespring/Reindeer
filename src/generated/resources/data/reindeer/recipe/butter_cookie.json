@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "butter_cookie",
+  "key": {
+    "M": "minecraft:milk_bucket",
+    "S": "minecraft:sugar",
+    "W": "minecraft:wheat"
+  },
+  "pattern": [
+    " S ",
+    "WMW",
+    " S "
+  ],
+  "result": {
+    "count": 1,
+    "id": "reindeer:butter_cookie"
+  }
+}

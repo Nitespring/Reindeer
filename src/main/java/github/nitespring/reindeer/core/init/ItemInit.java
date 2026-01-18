@@ -43,6 +43,9 @@ public class ItemInit {
 	public static final DeferredItem<Item> COOKED_REINDEER_MEAT = registerFood(
 			"cooked_reindeer_meat", 64, FoodRegistry.COOKED_REINDEER);
 
+	public static final DeferredItem<Item> BUTTER_COOKIE = registerFood(
+			"butter_cookie", 64, FoodRegistry.BUTTER_COOKIE);
+
 	public static final DeferredItem<Item> REINDEER_ANTLER = registerSimpleItem(
 			"reindeer_antler", 64);
 
@@ -100,6 +103,7 @@ public class ItemInit {
 								output.accept(RAW_REINDEER_MEAT.get());
 								output.accept(COOKED_REINDEER_MEAT.get());
 								output.accept(REINDEER_SADDLE.get());
+								output.accept(BUTTER_COOKIE.get());
 							}).build());
 
 

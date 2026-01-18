@@ -63,6 +63,18 @@ public class CustomRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_amethyst_shard", has(Items.AMETHYST_SHARD))
                 .group(getItemName(ItemInit.REINDEER_SADDLE))
                 .save(output);
+        ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM), RecipeCategory.TRANSPORTATION, ItemInit.BUTTER_COOKIE)
+                .pattern(" S ")
+                .pattern("WMW")
+                .pattern(" S ")
+                .define('W', Items.WHEAT)
+                .define('M', Items.MILK_BUCKET)
+                .define('S', Items.SUGAR)
+                .unlockedBy("has_wheat", has(Items.WHEAT))
+                .unlockedBy("has_milk_bucket", has(Items.MILK_BUCKET))
+                .unlockedBy("has_sugar", has(Items.SUGAR))
+                .group(getItemName(ItemInit.BUTTER_COOKIE))
+                .save(output);
     }
 
 

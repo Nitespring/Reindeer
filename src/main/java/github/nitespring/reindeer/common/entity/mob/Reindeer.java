@@ -4,11 +4,13 @@ import github.nitespring.reindeer.core.init.EntityInit;
 import github.nitespring.reindeer.core.tags.CustomItemTags;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.*;
 import net.minecraft.world.entity.*;
@@ -307,6 +309,9 @@ public class Reindeer extends AbstractReindeer implements GeoEntity {
         boolean flag = this.handleEating(player, stack);
         if (flag) {
             stack.consume(1, player);
+//            if(!player.hasInfiniteMaterials()&&stack.is(Items.MILK_BUCKET)) {
+//                player.addItem(new ItemStack(Items.BUCKET));
+//            }
         }
 
         return (InteractionResult)(!flag && !this.level().isClientSide() ? InteractionResult.PASS : InteractionResult.SUCCESS_SERVER);
@@ -315,10 +320,27 @@ public class Reindeer extends AbstractReindeer implements GeoEntity {
         boolean flag = false;
         float f = 0.0F;
         int i = 0;
-        if (!this.level().isClientSide()&&stack.is(CustomItemTags.REINDEER_FOOD_TAMING)) {
+        if (stack.is(CustomItemTags.REINDEER_FOOD)) {
+            f = 1.0F;
+            i=10;
+        }
+        if (!this.level().isClientSide()&&stack.is(CustomItemTags.REINDEER_FOOD_TAMING)&&(!isTame()||this.getOwner()==player)) {
             f = 2.0F;
             i = 20;
-            this.tryToTame(player);
+            flag = true;
+            if(!isTame()){
+                this.tryToTame(player);
+            }else{
+                for(int j = 0; j < 3; ++j) {
+                    double d0 = this.random.nextGaussian() * 0.02;
+                    double d1 = this.random.nextGaussian() * 0.02;
+                    double d2 = this.random.nextGaussian() * 0.02;
+                    player.level().addParticle(ParticleTypes.HEART,
+                            this.getRandomX((double)1.0F),
+                            this.getRandomY() + (double)0.5F,
+                            this.getRandomZ((double)1.0F), d0, d1, d2);
+                }
+            }
         }
 
         if (stack.is(CustomItemTags.REINDEER_FOOD_MATING)) {
@@ -347,22 +369,29 @@ public class Reindeer extends AbstractReindeer implements GeoEntity {
 
         if (flag) {
             this.gameEvent(GameEvent.EAT);
+            if(stack.is(Items.MILK_BUCKET)){
+                this.playSound(SoundEvents.GENERIC_DRINK.value());
+                if(!player.hasInfiniteMaterials()) {
+                    player.addItem(new ItemStack(Items.BUCKET));
+                }
+            }else{
+                this.playSound(SoundEvents.GENERIC_EAT.value());
+            }
         }
 
         return flag;
     }
 
     private void tryToTame(Player player) {
-        if (this.random.nextInt(5) == 0 && !EventHooks.onAnimalTame(this, player)) {
-            this.tame(player);
-            this.navigation.stop();
-            this.setTarget((LivingEntity)null);
-            //this.setOrderedToSit(true);
-            this.level().broadcastEntityEvent(this, (byte)7);
-        } else {
-            this.level().broadcastEntityEvent(this, (byte)6);
-        }
-
+            if (this.random.nextInt(5) == 0 && !EventHooks.onAnimalTame(this, player)) {
+                this.tame(player);
+                this.navigation.stop();
+                this.setTarget((LivingEntity) null);
+                //this.setOrderedToSit(true);
+                this.level().broadcastEntityEvent(this, (byte) 7);
+            } else {
+                this.level().broadcastEntityEvent(this, (byte) 6);
+            }
     }
 
 

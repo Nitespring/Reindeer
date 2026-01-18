@@ -40,6 +40,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.equipment.Equippable;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -48,6 +49,7 @@ import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.extensions.IPlayerExtension;
@@ -56,6 +58,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 import org.jspecify.annotations.Nullable;
+
 
 public abstract class AbstractReindeer extends TamableAnimal implements ContainerListener, HasCustomInventoryScreen, MenuProvider, FlyingAnimal, OwnableEntity, PlayerRideableJumping {
 
@@ -72,6 +75,8 @@ public abstract class AbstractReindeer extends TamableAnimal implements Containe
     private static final EntityDataAccessor<Boolean> HAS_SADDLE = SynchedEntityData.defineId(AbstractReindeer.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> HAS_CHEST = SynchedEntityData.defineId(AbstractReindeer.class, EntityDataSerializers.BOOLEAN);
     protected SimpleContainer inventory;
+    protected int chimeSoundCounter;
+    protected int gallopSoundCounter;
 
     protected int accelerationValue = 0;
 
@@ -303,14 +308,15 @@ public abstract class AbstractReindeer extends TamableAnimal implements Containe
     public void tick() {
         super.tick();
         if(isSaddled()){
+            chimeSoundCounter++;
             switch(getMovementState()){
                 case 1:
-                    if(tickCount%5==0){
+                    if(chimeSoundCounter%5==0){
                         this.playChimeSound();
                     }
                     break;
                 case 2:
-                    if(tickCount%3==0){
+                    if(chimeSoundCounter%3==0){
                         this.playChimeSound();
                     }
                     break;
@@ -552,7 +558,47 @@ public abstract class AbstractReindeer extends TamableAnimal implements Containe
             }
         }
     }
+    @Override
+    protected void playStepSound(BlockPos pos, BlockState block) {
+        if (!block.liquid()) {
+            BlockState blockstate = this.level().getBlockState(pos.above());
+            SoundType soundtype = block.getSoundType(this.level(), pos, this);
+            if (blockstate.is(Blocks.SNOW)) {
+                soundtype = blockstate.getSoundType(this.level(), pos, this);
+            }
 
+            if (this.isVehicle()) {
+                ++this.gallopSoundCounter;
+                switch(getMovementState()){
+                    case 1:
+                        if (gallopSoundCounter>5&&this.gallopSoundCounter % 3 == 0) {
+                            this.playSound(SoundEvents.HORSE_STEP_WOOD, soundtype.getVolume() * 0.15F, soundtype.getPitch());
+                        }
+                        break;
+                    case 2:
+                        if (gallopSoundCounter>5&&this.gallopSoundCounter % 5 == 0) {
+                            this.playSound(SoundEvents.HORSE_STEP_WOOD, soundtype.getVolume() * 0.15F, soundtype.getPitch());
+                        }
+                        break;
+                }
+            } else if (this.isWoodSoundType(soundtype)) {
+                this.playSound(SoundEvents.HORSE_STEP_WOOD, soundtype.getVolume() * 0.15F, soundtype.getPitch());
+            } else {
+                this.playSound(SoundEvents.HORSE_STEP, soundtype.getVolume() * 0.15F, soundtype.getPitch());
+            }
+        }
+
+    }
+    @Override
+    protected void tickRidden(Player p_478478_, Vec3 p_478619_) {
+        super.tickRidden(p_478478_, p_478619_);
+        if (this.isLocalInstanceAuthoritative()) {
+            if (p_478619_.z <= (double)0.0F) {
+                this.gallopSoundCounter = 0;
+            }
+        }
+
+    }
     @Override
     protected double getEffectiveGravity() {
         /*if(isVehicle()&&this.getDeltaMovement().horizontalDistance()>=0.1f) {
@@ -629,7 +675,6 @@ public abstract class AbstractReindeer extends TamableAnimal implements Containe
 
     @Override
     public @Nullable AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player player) {
-
         return new ReindeerInventoryMenu(i, playerInventory, inventory, this);
     }
 

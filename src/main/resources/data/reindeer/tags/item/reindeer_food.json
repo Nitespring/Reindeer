@@ -1,6 +1,7 @@
 {
   "replace" : false,
   "values" : [
+    "minecraft:wheat",
     "#reindeer:reindeer_food_mating",
     "#reindeer:reindeer_food_taming"
   ]
